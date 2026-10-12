@@ -5,7 +5,7 @@ import Popover from './Popover';
  * Liste déroulante personnalisée (remplace <select>).
  * options : [{ value, label, icon? }]
  */
-export default function Dropdown({ value, onChange, options, ariaLabel, className = 'w-full' }) {
+export default function Dropdown({ value, onChange, options, ariaLabel, className = 'w-full', icon: Icon }) {
   const current = options.find((o) => o.value === value) ?? options[0];
   const CurrentIcon = current.icon;
 
@@ -26,6 +26,7 @@ export default function Dropdown({ value, onChange, options, ariaLabel, classNam
           }`}
         >
           <span className="flex min-w-0 items-center gap-2.5">
+            {Icon && <Icon size={16} className="shrink-0 text-[var(--text-soft)]" />}
             {CurrentIcon && <CurrentIcon size={16} className="shrink-0 text-[var(--accent)]" />}
             <span className="truncate">{current.label}</span>
           </span>

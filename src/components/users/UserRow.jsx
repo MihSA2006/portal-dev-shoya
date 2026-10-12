@@ -37,7 +37,7 @@ export default function UserRow({ user, selected, panelOpen, dropUp, onToggle, o
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
           <img
-            src="/profile.png"
+            src={`${import.meta.env.BASE_URL}profile.png`}
             alt=""
             className="h-10 w-10 shrink-0 border-radius-full border-[var(--border-strong)] object-cover"
           />

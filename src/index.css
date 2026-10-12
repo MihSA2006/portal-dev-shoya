@@ -86,6 +86,7 @@
 [data-tone="dev"]    { --tone: var(--role-dev); }
 [data-tone="doc"]    { --tone: var(--role-doc); }
 [data-tone="danger"] { --tone: var(--danger); }
+[data-tone="cyan"] { --tone: var(--cyan); }
 
 html {
   color-scheme: dark;
@@ -243,4 +244,96 @@ body {
 
 input[type="search"]:focus-visible {
   outline: none;
+}
+
+/* ---- À AJOUTER À LA FIN DE src/index.css ---- */
+
+
+
+/* Champ de formulaire (input, select, textarea à l'intérieur). */
+.field {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  height: 2.5rem;
+  padding: 0 .75rem;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: .875rem;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.field:hover { border-color: var(--border-strong); }
+
+.field:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.field input,
+.field select,
+.field textarea {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  background: transparent;
+  color: inherit;
+  outline: none;
+}
+
+.field input::placeholder,
+.field textarea::placeholder { color: var(--text-muted); }
+
+.field select { appearance: none; cursor: pointer; }
+.field select option { background: var(--surface); color: var(--text); }
+.field input[readonly] { color: var(--text-soft); }
+
+/* Addon d'icône accolé à gauche d'un champ. */
+.field-addon {
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  margin-left: -.75rem;
+  border-right: 1px solid var(--border);
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+/* Boutons. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid transparent;
+  font-size: .875rem;
+  font-weight: 600;
+  transition: background-color .15s, border-color .15s, box-shadow .15s, opacity .15s;
+}
+
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: var(--accent-strong);
+  box-shadow: 0 0 18px var(--accent-glow);
+}
+
+.btn-outline {
+  border-color: var(--border-strong);
+  background: var(--bg-elevated);
+  color: var(--accent);
+}
+
+.btn-outline:not(:disabled):hover {
+  border-color: var(--accent);
+  background: var(--accent-tint);
 }

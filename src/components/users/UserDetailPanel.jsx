@@ -84,7 +84,7 @@ export default function UserDetailPanel({ user, onDisable, onReactivate, onCance
             </p>
 
             <div className="mt-4 flex items-center gap-3 border border-[var(--border)] bg-[var(--bg-elevated)] p-3">
-              <img src="/profile.png" alt="" className="h-11 w-11 shrink-0 border-radius-full border-[var(--border-strong)] object-cover" />
+              <img src={`${import.meta.env.BASE_URL}profile.png`} alt="" className="h-11 w-11 shrink-0 border-radius-full border-[var(--border-strong)] object-cover" />
               <div className="min-w-0 text-sm">
                 <p className="truncate font-medium text-[var(--text)]">{user.name}</p>
                 <p className="truncate text-xs text-[var(--text-muted)]">@{user.username}</p>
