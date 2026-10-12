@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Color palette (dark by default). */
+:root {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+
+  --bg: #060908;            /* Deep black. */
+  --bg-elevated: #0a100e;   /* Content area. */
+  --surface: #0d1412;       /* Navbar, sidebar, and menus. */
+  --surface-2: #131c19;     /* Hover and floating card surface. */
+  --accent-tint: #0b2a21;   /* Opaque active-item background. */
+
+  --border: rgba(16, 224, 138, 0.16);
+  --border-strong: rgba(16, 224, 138, 0.38);
+
+  --accent: #14e08c;        /* Luxury green. */
+  --accent-strong: #0fb874;
+  --accent-glow: rgba(20, 224, 140, 0.35);
+
+  --cyan: #22d3ee;          /* Unread indicators. */
+  --cyan-soft: rgba(34, 211, 238, 0.14);
+
+  --text: #e8f3ee;
+  --text-soft: #b4c8bf;
+  --text-muted: #7f988e;
+
+  --shadow: rgba(0, 0, 0, 0.55);
+  --cut: 14px;              /* Clipped corner size. */
+  --on-accent: #03140d;
+}
+
+/* Light mode. */
+[data-theme="light"] {
+  --bg: #eef3f1;
+  --bg-elevated: #f7faf9;
+  --surface: #ffffff;
+  --surface-2: #e9f1ee;
+  --accent-tint: #d5f3e6;
+
+  --border: rgba(5, 120, 85, 0.18);
+  --border-strong: rgba(5, 120, 85, 0.45);
+
+  --accent: #047857;
+  --accent-strong: #065f46;
+  --accent-glow: rgba(4, 120, 87, 0.25);
+
+  --cyan: #0891b2;
+  --cyan-soft: rgba(8, 145, 178, 0.12);
+
+  --text: #0b1f1a;
+  --text-soft: #34504a;
+  --text-muted: #62796f;
+
+  --shadow: rgba(10, 40, 30, 0.22);
+  --on-accent: #ffffff;
+}
+
+html { color-scheme: dark; }
+[data-theme="light"] { color-scheme: light; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display { font-family: var(--font-display); }
+
+/* Cut-corner frame; the border remains visible despite the clip-path.
+   Local variables: --frame-border (border color), --frame-bg (opaque background). */
+.cut-frame {
+  position: relative;
+  isolation: isolate;
+  background: var(--frame-border, var(--border-strong));
+  clip-path: polygon(
+    0 0, calc(100% - var(--cut)) 0, 100% var(--cut),
+    100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut))
+  );
+}
+.cut-frame::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: var(--frame-bg, var(--surface));
+  clip-path: polygon(
+    0 0, calc(100% - var(--cut) + 1px) 0, 100% calc(var(--cut) - 1px),
+    100% 100%, calc(var(--cut) - 1px) 100%, 0 calc(100% - var(--cut) + 1px)
+  );
+}
+.cut-sm { --cut: 9px; }
+
+/* Soft shadow for floating elements; drop-shadow follows the clip-path. */
+.floating { filter: drop-shadow(0 16px 24px var(--shadow)); }
+
+/* Square icon button. */
+.icon-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--text-muted);
+  transition: color .15s, background-color .15s;
+}
+.icon-btn:hover,
+.icon-btn[aria-expanded="true"] { color: var(--accent); background: var(--surface-2); }
+
+/* Cyan unread indicator. */
+.unread-dot {
+  width: 8px; height: 8px;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+/* Decorative glow at the bottom of the sidebar. */
+.sidebar-glow {
+  background:
+    linear-gradient(135deg, transparent 62%, var(--border-strong) 62.2%, transparent 62.6%),
+    linear-gradient(135deg, transparent 72%, var(--border) 72.2%, transparent 72.6%),
+    radial-gradient(120% 45% at 0% 100%, var(--accent-glow), transparent 70%);
+}
+
+/* Accent line below the navbar. */
+.navbar-line {
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: .5;
+}
+
+@keyframes pop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.anim-pop { animation: pop .14s ease-out; }
+@media (prefers-reduced-motion: reduce) { .anim-pop { animation: none; } }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
