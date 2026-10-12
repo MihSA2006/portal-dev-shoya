@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { ChevronRight, ChevronDown, ChevronUp, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { PAGES } from '../../constants/routes';
 
@@ -7,6 +7,7 @@ const isDesktop = () => window.matchMedia('(min-width: 768px)').matches;
 
 export default function Sidebar({ open, onClose, collapsed, onToggleCollapse }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const groupIsActive = (p) => pathname === p.path || pathname.startsWith(`${p.path}/`);
 
@@ -24,11 +25,18 @@ export default function Sidebar({ open, onClose, collapsed, onToggleCollapse }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  const toggleGroup = (path) => {
+  const toggleGroup = (item) => {
+    const { path, children } = item;
     // In the collapsed rail, clicking a group expands the sidebar and opens it
     if (collapsed && isDesktop()) {
       onToggleCollapse();
       setOpenGroups((g) => (g.includes(path) ? g : [...g, path]));
+      if (!groupIsActive(item)) navigate(children[0].path);
+      return;
+    }
+    if (!groupIsActive(item)) {
+      setOpenGroups((g) => (g.includes(path) ? g : [...g, path]));
+      navigate(children[0].path);
       return;
     }
     setOpenGroups((g) => (g.includes(path) ? g.filter((x) => x !== path) : [...g, path]));
@@ -68,7 +76,7 @@ export default function Sidebar({ open, onClose, collapsed, onToggleCollapse }) 
                     <div key={path}>
                       <button
                         type="button"
-                        onClick={() => toggleGroup(path)}
+                        onClick={() => toggleGroup(item)}
                         aria-expanded={isOpen}
                         title={collapsed ? name : undefined}
                         className={`${rowBase} w-full ${
@@ -83,7 +91,7 @@ export default function Sidebar({ open, onClose, collapsed, onToggleCollapse }) 
                       </button>
 
                       {isOpen && (
-                        <ul className={`mt-1 ml-6 space-y-1 border-l border-[var(--border-strong)] pl-2 ${hide}`}>
+                        <ul className={`animate-enter mt-1 ml-6 space-y-1 border-l border-[var(--border-strong)] pl-2 ${hide}`}>
                           {children.map((child) => (
                             <li key={child.path}>
                               <NavLink

@@ -58,15 +58,15 @@ export default function Navbar({ onMenuClick }) {
 
       {/* Recherche */}
       <div className="flex-1 px-2 md:px-4">
-        <label className="cut-frame cut-sm hidden h-10 max-w-2xl items-center gap-3 px-3.5 sm:flex focus-within:[--frame-border:var(--accent)]">
+        <label className="cut-frame cut-sm hidden h-10 max-w-2xl items-center gap-3 px-3.5 sm:flex">
           <Search size={18} className="text-[var(--accent)]" />
           <input
             ref={searchRef}
             type="search"
             placeholder="Rechercher documentation, endpoints, projets..."
-            className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none"
+            className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text)] placeholder:text-[var(--text-muted)]"
           />
-          <kbd className="hidden border border-[var(--border-strong)] px-1.5 py-0.5 text-[11px] text-[var(--text-muted)] lg:block">
+          <kbd className="hidden border-radius-full border-[var(--border-strong)] px-1.5 py-0.5 text-[11px] text-[var(--text-muted)] lg:block">
             Ctrl + K
           </kbd>
         </label>
