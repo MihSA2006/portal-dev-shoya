@@ -7,7 +7,7 @@ const KEY = 'shoya-sidebar-collapsed';
 
 export default function Layout() {
   const { pathname } = useLocation();
-  const isAdministrationPage = pathname.startsWith('/administration');
+  // const isAdministrationPage = pathname.startsWith('/administration');
   const [sidebarOpen, setSidebarOpen] = useState(false); // mobile drawer
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem(KEY) === '0'; } catch { return false; }
@@ -30,7 +30,7 @@ export default function Layout() {
         />
 
         <main className="flex-1 min-w-0 p-3 md:p-5 md:pl-2">
-          <div className={`${isAdministrationPage ? '' : 'cut-frame [--frame-bg:var(--bg-elevated)]'} min-h-[calc(100vh-4rem-1.5rem)] md:min-h-[calc(100vh-4rem-2.5rem)]`}>
+          <div>
             <div key={pathname} className="animate-enter p-0 md:p-0">
               <Outlet />
             </div>
