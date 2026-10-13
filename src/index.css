@@ -438,3 +438,71 @@ input[type="search"]:focus-visible {
   border-color: var(--accent);
   background: var(--accent-tint);
 }
+
+.task-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 272px;
+  transition: filter .15s;
+}
+
+.task-col.is-over {
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--tone) 45%, transparent));
+}
+
+.task-column {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  --frame-border: color-mix(in srgb, var(--tone) 38%, transparent);
+  --frame-bg: linear-gradient(180deg, color-mix(in srgb, var(--tone) 9%, var(--surface)), var(--bg-elevated) 75%);
+}
+
+.task-col.is-over .task-column {
+  --frame-border: var(--tone);
+}
+
+/* Carte : flottante, légèrement relevée au survol. */
+.task-card-wrap {
+  cursor: grab;
+  filter: drop-shadow(0 6px 10px var(--shadow));
+  transition: transform .15s, filter .15s, opacity .15s;
+}
+
+.task-card-wrap:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 12px 16px var(--shadow));
+}
+
+.task-card-wrap:active { cursor: grabbing; }
+
+.task-card-wrap.is-dragging {
+  opacity: .35;
+  transform: none;
+}
+
+.task-card {
+  --frame-border: color-mix(in srgb, var(--tone) 32%, transparent);
+  --frame-bg: var(--surface);
+}
+
+.task-card-wrap:hover .task-card,
+.task-card-wrap:focus-within .task-card {
+  --frame-border: var(--tone);
+}
+
+/* Description limitée à 2 lignes puis « … ». */
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task-col,
+  .task-card-wrap { transition: none; }
+}

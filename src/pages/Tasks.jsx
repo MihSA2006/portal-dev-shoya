@@ -1,44 +1,49 @@
-import { CheckSquare, CirclePlus, ListTodo } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import NewTaskModal from '../components/tasks/NewTaskModal';
+import TaskBoard from '../components/tasks/TaskBoard';
+import TasksFilters from '../components/tasks/TasksFilters';
+import TasksHeader from '../components/tasks/TasksHeader';
+import { ASSIGNEES, CURRENT_CYCLE_ID, CYCLES, PROJECTS, TASK_STATUSES } from '../constants/tasks';
+import { useTasksContext } from '../context/TasksContext';
+import { filterTasks } from '../utils/tasks';
 
-const Tasks = () => (
-  <div className="space-y-6">
-    <header className="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <p className="text-sm font-medium text-[var(--accent)]">ORGANISATION</p>
-        <h1 className="mt-1 font-display text-3xl font-semibold">Tâches</h1>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">Suivez vos tâches et leur avancement.</p>
-      </div>
-      <button className="inline-flex items-center gap-2 border border-[var(--border-strong)] px-4 py-2.5 text-sm font-medium text-[var(--accent)] hover:bg-[var(--accent-tint)]" type="button">
-        <CirclePlus size={17} />
-        Nouvelle tâche
-      </button>
-    </header>
+const DEFAULT_FILTERS = { project: 'all', assignee: 'all', status: 'all', cycle: CURRENT_CYCLE_ID };
 
-    <div className="grid gap-4 sm:grid-cols-3">
-      {[
-        { label: 'À faire', value: '—' },
-        { label: 'En cours', value: '—' },
-        { label: 'Terminées', value: '—' },
-      ].map(({ label, value }) => (
-        <div className="cut-frame p-4 [--frame-bg:var(--surface)]" key={label}>
-          <p className="text-sm text-[var(--text-muted)]">{label}</p>
-          <p className="mt-2 font-display text-2xl font-semibold">{value}</p>
-        </div>
-      ))}
+const Tasks = () => {
+  const { tasks, addTask, move, markRead } = useTasksContext();
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [creating, setCreating] = useState(false);
+
+  const visibleTasks = useMemo(() => filterTasks(tasks, filters), [tasks, filters]);
+  const columns = useMemo(
+    () => (filters.status === 'all' ? TASK_STATUSES : TASK_STATUSES.filter((s) => s.id === filters.status)),
+    [filters.status],
+  );
+  const cycle = CYCLES.find((c) => c.id === filters.cycle);
+
+  // La nouvelle tâche hérite des filtres actifs pour rester visible après création.
+  const defaults = {
+    projectId: filters.project !== 'all' ? filters.project : PROJECTS[0].id,
+    assigneeId: filters.assignee !== 'all' ? filters.assignee : ASSIGNEES[0].id,
+    cycleId: filters.cycle !== 'all' ? filters.cycle : CURRENT_CYCLE_ID,
+  };
+
+  return (
+    <div className="space-y-5">
+      <TasksHeader cycle={cycle} />
+      <TasksFilters
+        filters={filters}
+        onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))}
+        onReset={() => setFilters(DEFAULT_FILTERS)}
+        onCreate={() => setCreating(true)}
+      />
+      <TaskBoard tasks={visibleTasks} statuses={columns} onMove={move} onRead={markRead} />
+
+      {creating && (
+        <NewTaskModal defaults={defaults} onClose={() => setCreating(false)} onCreate={addTask} />
+      )}
     </div>
-
-    <section className="cut-frame [--frame-bg:var(--surface)]" aria-labelledby="tasks-list-title">
-      <div className="flex items-center gap-3 border-b border-[var(--border)] px-5 py-4">
-        <CheckSquare className="text-[var(--accent)]" size={19} />
-        <h2 id="tasks-list-title" className="font-display text-lg font-semibold">Toutes les tâches</h2>
-      </div>
-      <div className="flex flex-col items-center px-5 py-12 text-center">
-        <ListTodo className="mb-3 text-[var(--text-muted)]" size={30} strokeWidth={1.5} />
-        <p className="font-medium">Aucune tâche pour le moment</p>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">Les tâches qui vous sont attribuées apparaîtront dans cette liste.</p>
-      </div>
-    </section>
-  </div>
-);
+  );
+};
 
 export default Tasks;

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 export default function Modal({ title, description, onClose, children }) {
@@ -13,12 +14,12 @@ export default function Modal({ title, description, onClose, children }) {
     };
   }, [onClose]);
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="animate-enter fixed inset-0 z-[60] grid place-items-center bg-black/65 p-4"
+      className="animate-enter fixed inset-0 z-[60] grid place-items-center overflow-y-auto bg-black/65 p-4"
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="floating w-full max-w-lg">
@@ -37,6 +38,7 @@ export default function Modal({ title, description, onClose, children }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
