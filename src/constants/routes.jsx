@@ -11,6 +11,7 @@ import {
 
 import Dashboard from '../pages/Dashboard.jsx';
 import Documentation from '../pages/Documentation.jsx';
+import DocumentationProject from '../pages/DocumentationProject.jsx';
 import ActivityEntry from '../pages/ActivityEntry.jsx';
 import Tasks from '../pages/Tasks.jsx';
 import Absences from '../pages/Absences.jsx';
@@ -24,10 +25,13 @@ import AdminAuditLog from '../pages/administration/AuditLog.jsx';
 
 const SUFFIX = 'Portal Dev Shoya';
 
-/** Navigation tree (used by the Sidebar). An item with `children` becomes a collapsible group. */
+/**
+ * Navigation tree (used by the Sidebar). An item with `children` becomes a collapsible group.
+ * `submenu: 'projects'` : la Sidebar affiche <DocsSubmenu /> (un lien par projet) sous cet élément.
+ */
 export const PAGES = [
   { path: '/',               name: 'Tableau de bord', title: `Tableau de bord | ${SUFFIX}`, icon: LayoutDashboard, element: <Dashboard /> },
-  { path: '/documentation',  name: 'Documentation',   title: `Documentation | ${SUFFIX}`,   icon: FileText,        element: <Documentation /> },
+  { path: '/documentation',  name: 'Documentation',   title: `Documentation | ${SUFFIX}`,   icon: FileText,        element: <Documentation />, submenu: 'projects' },
   { path: '/activity-entry', name: 'Saisie',          title: `Saisie | ${SUFFIX}`,          icon: PenLine,         element: <ActivityEntry /> },
   { path: '/tasks',          name: 'Tâches',          title: `Tâches | ${SUFFIX}`,          icon: CheckSquare,     element: <Tasks />, badge: 3 },
   { path: '/absences',       name: 'Absences',        title: `Absences | ${SUFFIX}`,        icon: CalendarOff,     element: <Absences /> },
@@ -45,9 +49,17 @@ export const PAGES = [
   { path: '/settings',       name: 'Paramètres',      title: `Paramètres | ${SUFFIX}`,      icon: Settings,        element: <SettingsPage /> },
 ];
 
+/** Routes absentes du menu (pages dynamiques). */
+const HIDDEN_ROUTES = [
+  { path: '/documentation/:projectSlug/*', title: `Documentation | ${SUFFIX}`, element: <DocumentationProject /> },
+];
+
 /** Flat list of routes (used by App). /administration redirects to its first child. */
-export const ROUTES = PAGES.flatMap((page) =>
-  page.children
-    ? [{ path: page.path, element: <Navigate to={page.children[0].path} replace /> }, ...page.children]
-    : [page]
-);
+export const ROUTES = [
+  ...PAGES.flatMap((page) =>
+    page.children
+      ? [{ path: page.path, element: <Navigate to={page.children[0].path} replace /> }, ...page.children]
+      : [page]
+  ),
+  ...HIDDEN_ROUTES,
+];

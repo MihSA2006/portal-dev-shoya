@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronRight, ChevronDown, ChevronUp, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { ChevronRight, ChevronDown, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { PAGES } from '../../constants/routes';
+import DocsSubmenu from './DocsSubmenu';
 
 const isDesktop = () => window.matchMedia('(min-width: 768px)').matches;
 
@@ -10,15 +11,16 @@ export default function Sidebar({ open, onClose, collapsed, onToggleCollapse }) 
   const navigate = useNavigate();
 
   const groupIsActive = (p) => pathname === p.path || pathname.startsWith(`${p.path}/`);
+  const hasSubmenu = (p) => Boolean(p.children || p.submenu === 'projects');
 
   const [openGroups, setOpenGroups] = useState(() =>
-    PAGES.filter((p) => p.children && groupIsActive(p)).map((p) => p.path)
+    PAGES.filter((p) => hasSubmenu(p) && groupIsActive(p)).map((p) => p.path)
   );
 
   // Open a group automatically when navigating inside it
   useEffect(() => {
     PAGES.forEach((p) => {
-      if (p.children && groupIsActive(p)) {
+      if (hasSubmenu(p) && groupIsActive(p)) {
         setOpenGroups((g) => (g.includes(p.path) ? g : [...g, p.path]));
       }
     });
@@ -27,16 +29,17 @@ export default function Sidebar({ open, onClose, collapsed, onToggleCollapse }) 
 
   const toggleGroup = (item) => {
     const { path, children } = item;
+    const destination = children?.[0]?.path ?? path;
     // In the collapsed rail, clicking a group expands the sidebar and opens it
     if (collapsed && isDesktop()) {
       onToggleCollapse();
       setOpenGroups((g) => (g.includes(path) ? g : [...g, path]));
-      if (!groupIsActive(item)) navigate(children[0].path);
+      if (!groupIsActive(item)) navigate(destination);
       return;
     }
     if (!groupIsActive(item)) {
       setOpenGroups((g) => (g.includes(path) ? g : [...g, path]));
-      navigate(children[0].path);
+      navigate(destination);
       return;
     }
     setOpenGroups((g) => (g.includes(path) ? g.filter((x) => x !== path) : [...g, path]));
@@ -66,89 +69,137 @@ export default function Sidebar({ open, onClose, collapsed, onToggleCollapse }) 
           <div className="cut-frame h-full flex flex-col">
             <nav className="sidebar-glow flex-1 flex flex-col gap-1.5 overflow-y-auto overflow-x-hidden p-3" aria-label="Navigation principale">
               {PAGES.map((item) => {
-                const { path, name, icon: Icon, badge, children } = item;
+                const { path, name, icon: Icon, badge, children, submenu } = item;
 
                 /* ───── Group with sub-menu ───── */
-                if (children) {
+                if (hasSubmenu(item)) {
                   const isOpen = openGroups.includes(path);
                   const active = groupIsActive(item);
                   return (
                     <div key={path}>
-                      <button
-                        type="button"
-                        onClick={() => toggleGroup(item)}
-                        aria-expanded={isOpen}
-                        title={collapsed ? name : undefined}
-                        className={`${rowBase} w-full ${
+                      {submenu === 'projects' ? (
+                        <div className={`flex w-full items-center ${
                           active ? 'bg-[var(--surface-2)] text-[var(--accent)]' : idle
-                        }`}
-                      >
-                        <Icon size={19} strokeWidth={1.75} className="shrink-0" />
-                        <span className={`flex-1 truncate text-left ${hide}`}>{name}</span>
-                        <span className={hide}>
-                          {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                        </span>
-                      </button>
-
-                      {isOpen && (
-                        <ul className={`animate-enter mt-1 ml-6 space-y-1 border-l border-[var(--border-strong)] pl-2 ${hide}`}>
-                          {children.map((child) => (
-                            <li key={child.path}>
-                              <NavLink
-                                to={child.path}
-                                onClick={onClose}
-                                className={({ isActive }) =>
-                                  `flex h-9 items-center px-3 text-[13px] transition-colors ${
-                                    isActive
-                                      ? 'bg-[var(--accent-tint)] text-[var(--accent)] font-medium'
-                                      : 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
-                                  }`
-                                }
-                              >
-                                <span className="truncate">{child.name}</span>
-                              </NavLink>
-                            </li>
-                          ))}
-                        </ul>
+                        }`}>
+                          <NavLink
+                            to={path}
+                            onClick={() => {
+                              setOpenGroups((groups) => (groups.includes(path) ? groups : [...groups, path]));
+                              if (collapsed && isDesktop()) onToggleCollapse();
+                              onClose();
+                            }}
+                            title={collapsed ? name : undefined}
+                            className={`relative flex h-11 min-w-0 flex-1 items-center gap-3 px-3.5 text-sm font-medium ${
+                              collapsed ? 'md:justify-center md:px-0' : ''
+                            }`}
+                          >
+                            <Icon size={19} strokeWidth={1.75} className="shrink-0" />
+                            <span className={`truncate text-left ${hide}`}>{name}</span>
+                          </NavLink>
+                          <button
+                            type="button"
+                            onClick={() => setOpenGroups((groups) =>
+                              groups.includes(path) ? groups.filter((group) => group !== path) : [...groups, path]
+                            )}
+                            aria-expanded={isOpen}
+                            aria-controls={`sidebar-submenu-${path.replaceAll('/', '-')}`}
+                            aria-label={`${isOpen ? 'Réduire' : 'Afficher'} le sous-menu ${name}`}
+                            className={`grid h-11 w-10 shrink-0 place-items-center transition-colors hover:text-[var(--text)] ${hide}`}
+                          >
+                            <ChevronDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => toggleGroup(item)}
+                          aria-expanded={isOpen}
+                          aria-controls={`sidebar-submenu-${path.replaceAll('/', '-')}`}
+                          title={collapsed ? name : undefined}
+                          className={`${rowBase} w-full ${
+                            active ? 'bg-[var(--surface-2)] text-[var(--accent)]' : idle
+                          }`}
+                        >
+                          <Icon size={19} strokeWidth={1.75} className="shrink-0" />
+                          <span className={`flex-1 truncate text-left ${hide}`}>{name}</span>
+                          <span className={hide}>
+                            <ChevronDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                          </span>
+                        </button>
                       )}
+
+                      <div
+                        id={`sidebar-submenu-${path.replaceAll('/', '-')}`}
+                        className={`sidebar-submenu ${isOpen ? 'is-open' : ''} ${hide}`}
+                        aria-hidden={!isOpen}
+                        inert={!isOpen}
+                      >
+                        <div className="sidebar-submenu-content">
+                          {submenu === 'projects' ? (
+                            <DocsSubmenu onNavigate={onClose} />
+                          ) : (
+                            <ul className="mt-1 ml-6 space-y-1 border-l border-[var(--border-strong)] pl-2">
+                              {children.map((child) => (
+                                <li key={child.path}>
+                                  <NavLink
+                                    to={child.path}
+                                    onClick={onClose}
+                                    className={({ isActive }) =>
+                                      `flex h-9 items-center px-3 text-[13px] transition-colors ${
+                                        isActive
+                                          ? 'bg-[var(--accent-tint)] text-[var(--accent)] font-medium'
+                                          : 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
+                                      }`
+                                    }
+                                  >
+                                    <span className="truncate">{child.name}</span>
+                                  </NavLink>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   );
                 }
 
                 /* ───── Simple link ───── */
                 return (
-                  <NavLink
-                    key={path}
-                    to={path}
-                    end={path === '/'}
-                    onClick={onClose}
-                    title={collapsed ? name : undefined}
-                    className={({ isActive }) =>
-                      `${rowBase} ${
-                        isActive
-                          ? 'cut-frame cut-sm [--frame-border:var(--accent)] [--frame-bg:var(--accent-tint)] text-[var(--accent)]'
-                          : idle
-                      }`
-                    }
-                  >
-                    {({ isActive }) => (
-                      <>
-                        <Icon size={19} strokeWidth={1.75} className="shrink-0" />
-                        <span className={`flex-1 truncate ${hide}`}>{name}</span>
-                        {badge > 0 && (
-                          <>
-                            <span className={`grid h-5 min-w-5 place-items-center border border-[var(--cyan)] bg-[var(--cyan-soft)] px-1 text-[11px] font-semibold text-[var(--cyan)] ${hide}`}>
-                              {badge}
-                            </span>
-                            {collapsed && (
-                              <span className="unread-dot absolute right-2 top-2 hidden rounded-full md:block" />
-                            )}
-                          </>
-                        )}
-                        {isActive && <ChevronRight size={16} className={hide} />}
-                      </>
-                    )}
-                  </NavLink>
+                  <div key={path}>
+                    <NavLink
+                      to={path}
+                      end={path === '/'}
+                      onClick={onClose}
+                      title={collapsed ? name : undefined}
+                      className={({ isActive }) =>
+                        `${rowBase} ${
+                          isActive
+                            ? 'cut-frame cut-sm [--frame-border:var(--accent)] [--frame-bg:var(--accent-tint)] text-[var(--accent)]'
+                            : idle
+                        }`
+                      }
+                    >
+                      {({ isActive }) => (
+                        <>
+                          <Icon size={19} strokeWidth={1.75} className="shrink-0" />
+                          <span className={`flex-1 truncate ${hide}`}>{name}</span>
+                          {badge > 0 && (
+                            <>
+                              <span className={`grid h-5 min-w-5 place-items-center border border-[var(--cyan)] bg-[var(--cyan-soft)] px-1 text-[11px] font-semibold text-[var(--cyan)] ${hide}`}>
+                                {badge}
+                              </span>
+                              {collapsed && (
+                                <span className="unread-dot absolute right-2 top-2 hidden rounded-full md:block" />
+                              )}
+                            </>
+                          )}
+                          {isActive && <ChevronRight size={16} className={hide} />}
+                        </>
+                      )}
+                    </NavLink>
+
+                  </div>
                 );
               })}
             </nav>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, matchPath, useLocation } from 'react-router-dom';
 import { ROUTES } from './constants/routes';
 import Layout from './components/layout/Layout';
 
@@ -7,7 +7,8 @@ const App = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const current = ROUTES.find((route) => route.path === location.pathname);
+    // matchPath gère aussi les routes dynamiques (ex. /documentation/:projectSlug).
+    const current = ROUTES.find((route) => matchPath({ path: route.path, end: true }, location.pathname));
     if (current?.title) document.title = current.title;
   }, [location.pathname]);
 

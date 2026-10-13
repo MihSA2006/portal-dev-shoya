@@ -36,6 +36,7 @@ export const INITIAL_PROJECTS = [
     },
     apiVersion: 'v2.1.0',
     docOwner: '@tiana',
+    docs: { versions: ['v1', 'v2'], endpoints: 64, coverage: 96, syncMinutes: 2 },
     description: {
       details:
         "Shoya Wallet permet aux utilisateurs de stocker de l'argent, d'envoyer des paiements et de suivre leurs dépenses depuis une seule application.",
@@ -72,6 +73,7 @@ export const INITIAL_PROJECTS = [
     },
     apiVersion: 'v1.2.0',
     docOwner: '@mickael',
+    docs: { versions: ['v1', 'v2'], endpoints: 48, coverage: 91, syncMinutes: 3 },
     description: {
       details:
         "NovaPay est la passerelle de paiement de Shoya. Elle centralise l'encaissement, la réconciliation et les remboursements via une API unique.",
@@ -109,6 +111,7 @@ export const INITIAL_PROJECTS = [
     },
     apiVersion: 'v0.9.0',
     docOwner: '@hanitra',
+    docs: { versions: ['v1'], endpoints: 37, coverage: 87, syncMinutes: 5 },
     description: {
       details: "Bibliothèques communes : authentification, journalisation, gestion des rôles et composants d'interface.",
       goals: ["Extraire le module d'authentification", 'Couvrir 80 % du code par des tests'],
@@ -139,6 +142,7 @@ export const createProject = (id) => ({
   environments: { local: 'http://localhost:3000', staging: '', production: '' },
   apiVersion: 'v0.1.0',
   docOwner: OWNERS[0],
+  docs: { versions: ['v1'], endpoints: 0, coverage: 0, syncMinutes: null },
   description: { details: '', goals: [], stack: [] },
   github: { token: '', autoBranch: false, linkCommits: true, syncIssues: false, protectMain: false, lastSync: 'Jamais', recent: [] },
 });

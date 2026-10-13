@@ -13,15 +13,15 @@ const ProjectList = ({ projects, selectedId, onSelect }) => {
 
   return (
     <div className="floating lg:h-full lg:min-h-0">
-      <aside className="cut-frame p-5 lg:h-full lg:overflow-y-auto">
-        <div className="flex items-center gap-3">
+      <aside className="cut-frame p-5 lg:flex lg:h-full lg:min-h-0 lg:flex-col">
+        <div className="flex shrink-0 items-center gap-3">
           <h2 className="font-display text-lg font-semibold">Projets</h2>
           <span className="border border-[var(--border-strong)] bg-[var(--accent-tint)] px-2 text-xs font-medium text-[var(--accent)]">
             {projects.length}
           </span>
         </div>
 
-        <label className="field mt-4">
+        <label className="field mt-4 shrink-0">
           <Search size={17} className="shrink-0 text-[var(--accent)]" />
           <input
             type="search"
@@ -32,7 +32,7 @@ const ProjectList = ({ projects, selectedId, onSelect }) => {
           />
         </label>
 
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-4 space-y-3 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-1">
           {visible.map((p) => {
             const active = p.id === selectedId;
             return (

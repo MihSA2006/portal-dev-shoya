@@ -29,7 +29,7 @@
   --border-strong: rgba(16, 224, 138, 0.38);
 
   --accent: #14e08c;
-  /* Luxury green. */
+  /* Luxury green. *
   --accent-strong: #0fb874;
   --accent-glow: rgba(20, 224, 140, 0.35);
 
@@ -87,6 +87,7 @@
 [data-tone="doc"]    { --tone: var(--role-doc); }
 [data-tone="danger"] { --tone: var(--danger); }
 [data-tone="cyan"] { --tone: var(--cyan); }
+[data-tone="muted"] { --tone: var(--text-muted); }
 
 html {
   color-scheme: dark;
@@ -220,6 +221,38 @@ body {
   );
 }
 
+.doc-card {
+  --frame-border: color-mix(in srgb, var(--tone) 50%, transparent);
+  --frame-bg: linear-gradient(135deg, color-mix(in srgb, var(--tone) 10%, var(--surface)), var(--surface) 65%);
+  transition: --frame-border .15s;
+}
+
+.group:hover .doc-card,
+.group:focus-visible .doc-card {
+  --frame-border: var(--tone);
+}
+
+/* Barre de progression teintée. */
+.doc-progress {
+  height: 6px;
+  background: var(--surface-2);
+}
+
+.doc-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--tone);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--tone) 60%, transparent);
+}
+
+.overview-hero {
+  --frame-bg:
+    radial-gradient(70% 130% at 0% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%),
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 7%, transparent) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(0deg, color-mix(in srgb, var(--accent) 7%, transparent) 1px, transparent 1px) 0 0 / 28px 28px,
+    var(--surface);
+}
+
 
 @keyframes pop {
   from {
@@ -253,10 +286,33 @@ body {
   animation: enter .24s ease-out both;
 }
 
+.sidebar-submenu {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: grid-template-rows .24s ease, opacity .18s ease, transform .24s ease;
+}
+
+.sidebar-submenu.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.sidebar-submenu-content {
+  min-height: 0;
+  overflow: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .anim-pop,
-  .animate-enter {
+  .animate-enter,
+  .sidebar-submenu {
     animation: none;
+    transition: none;
   }
 }
 
@@ -269,7 +325,29 @@ input[type="search"]:focus-visible {
   outline: none;
 }
 
-/* ---- À AJOUTER À LA FIN DE src/index.css ---- */
+
+.ep-layout,
+.ep-cols {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1500px) {
+  .ep-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+  .ep-layout { grid-template-columns: minmax(0, 1fr) minmax(360px, 460px); }
+
+  .ep-sticky {
+    position: sticky;
+    top: 6rem;
+    height: calc(100vh - 8rem);
+    max-height: calc(100vh - 8rem);
+    min-height: 0;
+    overflow: hidden;
+  }
+}
 
 
 
