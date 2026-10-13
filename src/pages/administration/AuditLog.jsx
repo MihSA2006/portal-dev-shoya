@@ -1,105 +1,125 @@
 import { useMemo, useState } from 'react';
-import { ClipboardList, Search } from 'lucide-react';
+import { ShieldCheck, Download } from 'lucide-react';
+import AuditFilters from '../../components/audit/AuditFilters';
+import AuditTable from '../../components/audit/AuditTable';
+import AuditDetailModal from '../../components/audit/AuditDetailModal';
+import Pagination from '../../components/ui/Pagination';
+import { downloadCsv } from '../../utils/csv';
+import { ACTIONS, RESULTS, RANGE_MS, generateAuditEvents, formatTimestamp } from '../../constants/audit';
 
-const AUDIT_LOG = [
-  { id: 1, actor: 'Hanitra Rakoto', action: 'A ajouté un utilisateur', target: 'Mirana Razafy', category: 'users', date: "Aujourd'hui, 09:14", ip: '192.168.1.24' },
-  { id: 2, actor: 'Tiana Andrianina', action: 'A modifié un projet', target: 'Portail Shoya', category: 'projects', date: "Aujourd'hui, 08:52", ip: '192.168.1.31' },
-  { id: 3, actor: 'Fanomezantsoa Mickael', action: 'A modifié un seuil d’alerte', target: 'Dépassement du budget', category: 'alerts', date: 'Hier, 16:37', ip: '192.168.1.18' },
-  { id: 4, actor: 'Hanitra Rakoto', action: 'A changé les permissions', target: 'Rôle Développeur', category: 'users', date: 'Hier, 14:05', ip: '192.168.1.24' },
-  { id: 5, actor: 'Tiana Andrianina', action: 'A archivé un projet', target: 'Espace client', category: 'projects', date: '10 oct. 2026, 11:22', ip: '192.168.1.31' },
-];
+const PAGE_SIZE = 10;
 
-const CATEGORIES = {
-  users: 'Utilisateurs',
-  projects: 'Projets',
-  alerts: 'Alertes',
+// Données de démonstration : à remplacer par votre API
+const EVENTS = generateAuditEvents(247);
+
+const SORT_VALUE = {
+  timestamp: (e) => e.time,
+  user: (e) => e.userName,
+  action: (e) => ACTIONS[e.actionKey].label,
+  resource: (e) => e.resource,
+  project: (e) => e.project,
+  ip: (e) => e.ip,
+  result: (e) => RESULTS[e.result].label,
 };
 
-const AuditLog = () => {
-  const [query, setQuery] = useState('');
-  const [category, setCategory] = useState('');
+const CSV_COLUMNS = [
+  { header: 'Horodatage',  value: (e) => formatTimestamp(e.time) },
+  { header: 'Utilisateur', value: (e) => e.userName },
+  { header: 'Rôle',        value: (e) => e.userRole },
+  { header: 'Action',      value: (e) => ACTIONS[e.actionKey].label },
+  { header: 'Ressource',   value: (e) => e.resource },
+  { header: 'Projet',      value: (e) => e.project },
+  { header: 'Adresse IP',  value: (e) => e.ip },
+  { header: 'Résultat',    value: (e) => RESULTS[e.result].label },
+];
 
-  const entries = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return AUDIT_LOG.filter((entry) =>
-      (!category || entry.category === category)
-      && (!q || entry.actor.toLowerCase().includes(q)
-        || entry.action.toLowerCase().includes(q)
-        || entry.target.toLowerCase().includes(q)
-        || entry.ip.includes(q))
-    );
-  }, [query, category]);
+const AuditLog = () => {
+  const [filters, setFilters] = useState({ user: '', action: '', project: '', range: 'week', result: '' });
+  const [sort, setSort] = useState({ key: 'timestamp', dir: 'desc' });
+  const [page, setPage] = useState(1);
+  const [detail, setDetail] = useState(null);
+
+  const filtered = useMemo(() => {
+    const now = Date.now();
+    const span = RANGE_MS[filters.range];
+    const get = SORT_VALUE[sort.key];
+    const dir = sort.dir === 'asc' ? 1 : -1;
+
+    return EVENTS
+      .filter(
+        (e) =>
+          (!filters.user || e.userId === filters.user) &&
+          (!filters.action || e.actionKey === filters.action) &&
+          (!filters.project || e.project === filters.project) &&
+          (!filters.result || e.result === filters.result) &&
+          now - e.time <= span
+      )
+      .sort((a, b) => {
+        const x = get(a);
+        const y = get(b);
+        const c = typeof x === 'number' ? x - y : String(x).localeCompare(String(y), 'fr', { numeric: true });
+        return c * dir;
+      });
+  }, [filters, sort]);
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const rows = filtered.slice(start, start + PAGE_SIZE);
+
+  const changeFilters = (patch) => { setFilters((f) => ({ ...f, ...patch })); setPage(1); };
+  const changeSort = (key) => {
+    setSort((s) => (s.key === key ? { key, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: key === 'timestamp' ? 'desc' : 'asc' }));
+    setPage(1);
+  };
+
+  const exportCsv = () =>
+    downloadCsv(`journal-audit-${new Date().toISOString().slice(0, 10)}.csv`, CSV_COLUMNS, filtered);
 
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-3xl font-semibold">Journal d’audit</h1>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Consultez l’historique des actions effectuées dans votre organisation.
-        </p>
+    <div className="space-y-5">
+      {/* En-tête */}
+      <header className="cut-frame flex flex-wrap items-center justify-between gap-4 p-5 [--frame-bg:var(--surface)]">
+        <div className="flex items-center gap-4">
+          <span className="cut-frame cut-sm grid h-14 w-14 shrink-0 place-items-center text-[var(--accent)] [--frame-border:var(--accent)] [--frame-bg:var(--accent-tint)]">
+            <ShieldCheck size={28} />
+          </span>
+          <div>
+            <h1 className="font-display text-3xl font-semibold text-[var(--text)]">Journal d'audit</h1>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">
+              Registre immuable des actions administratives et sensibles pour la sécurité.
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={exportCsv}
+          disabled={filtered.length === 0}
+          className="cut-frame cut-sm inline-flex h-11 items-center gap-2 px-5 text-sm font-medium text-[var(--accent)] [--frame-border:var(--accent)] [--frame-bg:var(--accent-tint)] enabled:hover:[--frame-bg:var(--surface-2)] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Download size={17} /> Exporter en CSV
+        </button>
       </header>
 
-      <div className="flex flex-wrap gap-3">
-        <label className="cut-frame cut-sm flex h-10 min-w-[240px] flex-1 items-center gap-3 px-3.5 sm:max-w-md focus-within:[--frame-border:var(--accent)]">
-          <Search size={17} className="text-[var(--accent)]" />
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Rechercher par utilisateur, action, cible ou adresse IP..."
-            className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none"
-          />
-        </label>
-        <select
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
-          aria-label="Filtrer par catégorie"
-          className="h-10 border border-[var(--border-strong)] bg-[var(--surface)] px-3 text-sm text-[var(--text-soft)] outline-none focus:border-[var(--accent)]"
-        >
-          <option value="">Toutes les catégories</option>
-          {Object.entries(CATEGORIES).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-        </select>
-      </div>
-
-      <section className="cut-frame [--frame-bg:var(--surface)]">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)]">
-                <th className="px-5 py-3 font-medium">Utilisateur</th>
-                <th className="px-5 py-3 font-medium">Action</th>
-                <th className="px-5 py-3 font-medium">Cible</th>
-                <th className="px-5 py-3 font-medium">Catégorie</th>
-                <th className="px-5 py-3 font-medium">Date</th>
-                <th className="px-5 py-3 font-medium">Adresse IP</th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((entry) => (
-                <tr key={entry.id} className="border-b border-[var(--border)] last:border-0 transition-colors hover:bg-[var(--surface-2)]">
-                  <td className="px-5 py-3 font-medium text-[var(--text)]">{entry.actor}</td>
-                  <td className="px-5 py-3 text-[var(--text-soft)]">{entry.action}</td>
-                  <td className="px-5 py-3 text-[var(--text-soft)]">{entry.target}</td>
-                  <td className="px-5 py-3">
-                    <span className="inline-block border border-[var(--border-strong)] px-2 py-0.5 text-xs font-medium text-[var(--text-muted)]">
-                      {CATEGORIES[entry.category]}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-[var(--text-muted)]">{entry.date}</td>
-                  <td className="px-5 py-3 font-mono text-xs text-[var(--text-muted)]">{entry.ip}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Filtres + tableau */}
+      <section className="cut-open [--frame-bg:var(--surface)]">
+        <div className="border-b border-[var(--border)] p-5">
+          <AuditFilters filters={filters} onChange={changeFilters} />
         </div>
 
-        {entries.length === 0 && (
-          <div className="flex flex-col items-center px-5 py-10 text-center">
-            <ClipboardList className="mb-3 text-[var(--text-muted)]" size={26} strokeWidth={1.5} />
-            <p className="text-sm text-[var(--text-muted)]">Aucune action ne correspond à votre recherche.</p>
-          </div>
-        )}
+        <AuditTable rows={rows} sort={sort} onSort={changeSort} onDetail={setDetail} />
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] px-5 py-4 text-sm text-[var(--text-muted)]">
+          <p>
+            {filtered.length === 0
+              ? 'Aucun résultat'
+              : `Affichage ${start + 1}–${start + rows.length} sur ${filtered.length} événement${filtered.length > 1 ? 's' : ''}`}
+          </p>
+          <Pagination page={currentPage} pageCount={pageCount} onChange={setPage} />
+        </div>
       </section>
+
+      {detail && <AuditDetailModal event={detail} onClose={() => setDetail(null)} />}
     </div>
   );
 };

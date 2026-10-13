@@ -7,7 +7,7 @@ const getInitial = () => {
     const saved = localStorage.getItem(KEY);
     if (saved === 'light' || saved === 'dark') return saved;
   } catch { /* Storage is unavailable. */ }
-  return 'dark';
+  return 'light';
 };
 
 export default function useTheme() {

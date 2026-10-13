@@ -198,6 +198,29 @@ body {
   background: color-mix(in srgb, var(--tone) 14%, transparent);
 }
 
+.cut-open { position: relative; isolation: isolate; }
+.cut-open::before,
+.cut-open::after { content: ""; position: absolute; pointer-events: none; }
+.cut-open::before {
+  inset: 0;
+  z-index: -2;
+  background: var(--frame-border, var(--border-strong));
+  clip-path: polygon(
+    0 0, calc(100% - var(--cut)) 0, 100% var(--cut),
+    100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut))
+  );
+}
+.cut-open::after {
+  inset: 1px;
+  z-index: -1;
+  background: var(--frame-bg, var(--surface));
+  clip-path: polygon(
+    0 0, calc(100% - var(--cut) + 1px) 0, 100% calc(var(--cut) - 1px),
+    100% 100%, calc(var(--cut) - 1px) 100%, 0 calc(100% - var(--cut) + 1px)
+  );
+}
+
+
 @keyframes pop {
   from {
     opacity: 0;

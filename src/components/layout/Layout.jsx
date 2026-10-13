@@ -10,11 +10,11 @@ export default function Layout() {
   const isAdministrationPage = pathname.startsWith('/administration');
   const [sidebarOpen, setSidebarOpen] = useState(false); // mobile drawer
   const [collapsed, setCollapsed] = useState(() => {
-    try { return localStorage.getItem(KEY) === '1'; } catch { return false; }
+    try { return localStorage.getItem(KEY) === '0'; } catch { return false; }
   });
 
   useEffect(() => {
-    try { localStorage.setItem(KEY, collapsed ? '1' : '0'); } catch { /* ignore */ }
+    try { localStorage.setItem(KEY, collapsed ? '0' : '1'); } catch { /* ignore */ }
   }, [collapsed]);
 
   return (
