@@ -56,6 +56,7 @@ Open the local URL printed by Vite in your browser.
 | `/documentation/:projectSlug/endpoints/:endpointSlug` | Endpoint details and code examples |
 | `/activity-entry` | Activity entry |
 | `/tasks` | Task board |
+| `/tasks/:taskKey` | Task details |
 | `/absences` | Absences |
 | `/administration/users` | Administration: users |
 | `/administration/projects` | Administration: projects |

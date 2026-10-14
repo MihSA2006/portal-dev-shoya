@@ -5,7 +5,9 @@ import Popover from './Popover';
  * Liste déroulante personnalisée (remplace <select>).
  * options : [{ value, label, icon? }]
  */
-export default function Dropdown({ value, onChange, options, ariaLabel, className = 'w-full', icon: Icon }) {
+export default function Dropdown({
+  id, value, onChange, options, ariaLabel, className = 'w-full', triggerClassName = '', icon: Icon,
+}) {
   const current = options.find((o) => o.value === value) ?? options[0];
   const CurrentIcon = current.icon;
 
@@ -16,12 +18,13 @@ export default function Dropdown({ value, onChange, options, ariaLabel, classNam
       className={className}
       trigger={({ open, toggle }) => (
         <button
+          id={id}
           type="button"
           onClick={toggle}
           aria-haspopup="listbox"
           aria-expanded={open}
           aria-label={ariaLabel}
-          className={`cut-frame cut-sm flex h-11 w-full items-center justify-between gap-3 px-4 text-sm text-[var(--text-soft)] transition-colors hover:text-[var(--text)] ${
+          className={`cut-frame cut-sm flex h-11 w-full items-center justify-between gap-3 px-4 text-sm text-[var(--text-soft)] transition-colors hover:text-[var(--text)] ${triggerClassName} ${
             open ? '[--frame-border:var(--accent)] text-[var(--text)]' : ''
           }`}
         >

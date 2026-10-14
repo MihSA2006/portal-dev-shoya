@@ -14,6 +14,7 @@ import Documentation from '../pages/Documentation.jsx';
 import DocumentationProject from '../pages/DocumentationProject.jsx';
 import ActivityEntry from '../pages/ActivityEntry.jsx';
 import Tasks from '../pages/Tasks.jsx';
+import TaskDetail from '../pages/tasks/TaskDetail.jsx';
 import Absences from '../pages/Absences.jsx';
 import SettingsPage from '../pages/Settings.jsx';
 
@@ -30,27 +31,28 @@ const SUFFIX = 'Portal Dev Shoya';
  * `submenu: 'projects'` : la Sidebar affiche <DocsSubmenu /> (un lien par projet) sous cet élément.
  */
 export const PAGES = [
-  { path: '/',               name: 'Tableau de bord', title: `Tableau de bord | ${SUFFIX}`, icon: LayoutDashboard, element: <Dashboard /> },
-  { path: '/documentation',  name: 'Documentation',   title: `Documentation | ${SUFFIX}`,   icon: FileText,        element: <Documentation />, submenu: 'projects' },
-  { path: '/activity-entry', name: 'Saisie',          title: `Saisie | ${SUFFIX}`,          icon: PenLine,         element: <ActivityEntry /> },
-  { path: '/tasks',          name: 'Tâches',          title: `Tâches | ${SUFFIX}`,          icon: CheckSquare,     element: <Tasks />, badge: 3 },
-  { path: '/absences',       name: 'Absences',        title: `Absences | ${SUFFIX}`,        icon: CalendarOff,     element: <Absences /> },
+  { path: '/', name: 'Tableau de bord', title: `Tableau de bord | ${SUFFIX}`, icon: LayoutDashboard, element: <Dashboard /> },
+  { path: '/documentation', name: 'Documentation', title: `Documentation | ${SUFFIX}`, icon: FileText, element: <Documentation />, submenu: 'projects' },
+  { path: '/activity-entry', name: 'Saisie', title: `Saisie | ${SUFFIX}`, icon: PenLine, element: <ActivityEntry /> },
+  { path: '/tasks', name: 'Tâches', title: `Tâches | ${SUFFIX}`, icon: CheckSquare, element: <Tasks />, badge: 3 },
+  { path: '/absences', name: 'Absences', title: `Absences | ${SUFFIX}`, icon: CalendarOff, element: <Absences /> },
   {
     path: '/administration',
     name: 'Administration',
     icon: Users,
     children: [
-      { path: '/administration/users',            name: 'Utilisateurs',     title: `Utilisateurs | ${SUFFIX}`,     element: <AdminUsers /> },
-      { path: '/administration/projects',         name: 'Projets',          title: `Projets | ${SUFFIX}`,          element: <AdminProjects /> },
-      { path: '/administration/alert-thresholds', name: "Seuils d'alerte",  title: `Seuils d'alerte | ${SUFFIX}`,  element: <AdminAlertThresholds /> },
-      { path: '/administration/audit-log',        name: "Journal d'audit",  title: `Journal d'audit | ${SUFFIX}`,  element: <AdminAuditLog /> },
+      { path: '/administration/users', name: 'Utilisateurs', title: `Utilisateurs | ${SUFFIX}`, element: <AdminUsers /> },
+      { path: '/administration/projects', name: 'Projets', title: `Projets | ${SUFFIX}`, element: <AdminProjects /> },
+      { path: '/administration/alert-thresholds', name: "Seuils d'alerte", title: `Seuils d'alerte | ${SUFFIX}`, element: <AdminAlertThresholds /> },
+      { path: '/administration/audit-log', name: "Journal d'audit", title: `Journal d'audit | ${SUFFIX}`, element: <AdminAuditLog /> },
     ],
   },
-  { path: '/settings',       name: 'Paramètres',      title: `Paramètres | ${SUFFIX}`,      icon: Settings,        element: <SettingsPage /> },
+  { path: '/settings', name: 'Paramètres', title: `Paramètres | ${SUFFIX}`, icon: Settings, element: <SettingsPage /> },
 ];
 
 /** Routes absentes du menu (pages dynamiques). */
 const HIDDEN_ROUTES = [
+  { path: '/tasks/:taskKey', title: `Détail de la tâche | ${SUFFIX}`, element: <TaskDetail /> },
   { path: '/documentation/:projectSlug/*', title: `Documentation | ${SUFFIX}`, element: <DocumentationProject /> },
 ];
 

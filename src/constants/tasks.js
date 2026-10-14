@@ -53,7 +53,7 @@ const BASE_TASKS = [
 
 export const TASKS_ROUTE = '/tasks';
 export const DOCS_ROUTE = '/documentation';
-export const taskPath = (id) => `${TASKS_ROUTE}/${id}`;
+export const taskPath = (key) => `${TASKS_ROUTE}/${encodeURIComponent(key)}`;
 
 export const STATUSES_BY_ID = toMap(TASK_STATUSES);
 export const CYCLES_BY_ID = toMap(CYCLES);

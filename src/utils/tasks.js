@@ -50,4 +50,13 @@ export const moveTask = (tasks, id, status, beforeId = null) => {
   return rest;
 };
 
+export const formatDateTime = (timestamp) =>
+  new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeStyle: 'short' }).format(timestamp);
 
+// Avancement du cycle (0–100) selon la date du jour.
+export const cycleProgress = (cycle) => {
+  if (!cycle) return 0;
+  const start = new Date(cycle.startsAt).getTime();
+  const end = new Date(cycle.endsAt).getTime();
+  return Math.round(Math.min(1, Math.max(0, (Date.now() - start) / (end - start))) * 100);
+};
