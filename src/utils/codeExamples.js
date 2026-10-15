@@ -1,5 +1,16 @@
 const isObject = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const quote = (s) => `'${String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+const defaultHeaderExample = (name) => {
+  const normalizedName = String(name ?? '').toLowerCase();
+  if (normalizedName === 'authorization') return '******';
+  if (normalizedName === 'accept') return 'application/json';
+  if (normalizedName.includes('key')) return 'YOUR_API_KEY';
+  return 'VALUE';
+};
+const normalizeHeader = (header) => {
+  const value = header.example ?? defaultHeaderExample(header.name);
+  return { ...header, example: String(value) };
+};
 
 const jsLiteral = (value, depth = 0) => {
   const pad = '  '.repeat(depth + 1);
@@ -58,7 +69,14 @@ const phpExample = ({ title, method, url, headers, body }) => {
 
 /** Exemples de code dans les trois langages. `headers` : seuls les en-têtes requis sont inclus. */
 export const buildExamples = ({ title, method, url, headers, body, status }) => {
-  const input = { title, method, url, headers: headers.filter((h) => h.required), body, status };
+  const input = {
+    title,
+    method,
+    url,
+    headers: (headers ?? []).filter((h) => h.required).map(normalizeHeader),
+    body,
+    status,
+  };
   return [
     { id: 'curl', label: 'cURL', code: curlExample(input) },
     { id: 'js', label: 'JavaScript', code: jsExample(input) },

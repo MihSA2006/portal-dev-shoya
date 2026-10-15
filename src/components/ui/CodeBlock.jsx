@@ -15,7 +15,7 @@ const CodeBlock = ({ code, className = '' }) => (
   <div className={`relative border border-[var(--border)] bg-[var(--bg-elevated)] ${className}`}>
     <div className="absolute right-2 top-2"><CopyButton value={code} label="Copier le code" /></div>
     <pre className="overflow-x-auto p-4 pr-12 font-mono text-[13px] leading-6 text-[var(--text-soft)]">
-      {code.split('\n').map((line, i) => (
+      {code.split(/\r?\n/).map((line, i) => (
         <div key={i} className="min-h-[1.5rem] whitespace-pre">
           {tokenize(line).map((t, j) => (t.kind ? <span key={j} className={KIND_CLASS[t.kind]}>{t.text}</span> : t.text))}
         </div>

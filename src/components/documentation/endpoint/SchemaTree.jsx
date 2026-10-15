@@ -15,10 +15,13 @@ const SchemaTree = ({ fields }) => {
         <ul className="ml-2 mt-2 space-y-2.5 border-l border-[var(--border-strong)] pl-0">
           {fields.map((f) => (
             <li key={f.name} className="flex items-center gap-3">
-              <span aria-hidden="true" className="h-px w-3 bg-[var(--border-strong)]" />
+              <span aria-hidden="true" className="h-px w-3 shrink-0 bg-[var(--border-strong)]" />
               <span className="font-medium text-[var(--text)]">{f.name}</span>
               <span className="text-xs text-[var(--text-muted)]">{f.type}</span>
               {f.required && <span className="text-xs text-[var(--text-muted)]">(requis)</span>}
+              {f.description && (
+                <span className="min-w-0 truncate text-xs text-[var(--text-muted)]" title={f.description}>— {f.description}</span>
+              )}
             </li>
           ))}
         </ul>
