@@ -1,69 +1,157 @@
-import { ClipboardPenLine, Clock3, Send } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEndpoints } from '../context/endpointsContext';
+import { useProjects } from '../context/ProjectsContext';
+import { isConnected } from '../utils/documentation';
+import { slugify } from '../utils/endpointLinks';
+import {
+  INITIAL_FILTERS, buildRegistry, computeStats, filterRows, sortRows,
+} from '../utils/endpointRegistry';
+import EndpointCardGrid from '../components/endpoints/EndpointCardGrid';
+import EndpointFilters from '../components/endpoints/EndpointFilters';
+import EndpointPagination from '../components/endpoints/EndpointPagination';
+import EndpointStats from '../components/endpoints/EndpointStats';
+import EndpointTable from '../components/endpoints/EndpointTable';
+import EndpointsHeader from '../components/endpoints/EndpointsHeader';
+import EndpointsToolbar from '../components/endpoints/EndpointsToolbar';
+import QuickChips from '../components/endpoints/QuickChips';
+import WorkspaceSidebar from '../components/endpoints/WorkspaceSidebar';
 
-const ActivityEntry = () => (
-  <div className="space-y-6">
-    <header>
-      <p className="text-sm font-medium text-[var(--accent)]">ACTIVITÉ</p>
-      <h1 className="mt-1 font-display text-3xl font-semibold">Saisie</h1>
-      <p className="mt-2 max-w-2xl text-sm text-[var(--text-muted)]">
-        Déclarez votre activité et consultez vos saisies récentes.
-      </p>
-    </header>
+const FILTER_PARAMS = ['q', 'project', 'method', 'status', 'section', 'version', 'owner', 'doc', 'recent'];
 
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(260px,1fr)]">
-      <section className="cut-frame p-5 [--frame-bg:var(--surface)]" aria-labelledby="new-entry-title">
-        <div className="mb-5 flex items-center gap-3">
-          <ClipboardPenLine className="text-[var(--accent)]" size={20} />
-          <h2 id="new-entry-title" className="font-display text-lg font-semibold">Nouvelle saisie</h2>
+const readFilters = (params, projects) => {
+  const requestedProject = params.get('project');
+  const project = projects.find((item) =>
+    String(item.id) === requestedProject
+    || item.name.toLocaleLowerCase() === requestedProject?.toLocaleLowerCase()
+    || slugify(item.name) === requestedProject?.toLocaleLowerCase()
+  );
+
+  return {
+    ...INITIAL_FILTERS,
+    query: params.get('q') ?? '',
+    project: project ? String(project.id) : 'all',
+    method: params.get('method') ?? 'all',
+    status: params.get('status') ?? 'all',
+    section: params.get('section') ?? 'all',
+    version: params.get('version') ?? 'all',
+    owner: params.get('owner') ?? 'all',
+    doc: params.get('doc') ?? 'all',
+    recent: params.get('recent') === 'true',
+  };
+};
+
+const writeFilters = (params, filters, projects) => {
+  const next = new URLSearchParams(params);
+  FILTER_PARAMS.forEach((key) => next.delete(key));
+
+  if (filters.query) next.set('q', filters.query);
+  if (filters.project !== 'all') {
+    const project = projects.find((item) => String(item.id) === filters.project);
+    if (project) next.set('project', slugify(project.name));
+  }
+  ['method', 'status', 'section', 'version', 'owner', 'doc'].forEach((key) => {
+    if (filters[key] !== INITIAL_FILTERS[key]) next.set(key, filters[key]);
+  });
+  if (filters.recent) next.set('recent', 'true');
+
+  return next;
+};
+
+/** Saisie : espace endpoints (sidebar du workspace + liste globale de tous les endpoints). */
+const ActivityEntry = () => {
+  const { projects } = useProjects();
+  const { getCategories } = useEndpoints();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const filters = useMemo(() => readFilters(searchParams, projects), [searchParams, projects]);
+  const [view, setView] = useState('list');
+  const [density, setDensity] = useState('compact');
+  const [sort, setSort] = useState('updated');
+  const [pageSize, setPageSize] = useState(25);
+  const [page, setPage] = useState(1);
+
+  const rows = useMemo(() => buildRegistry(projects, getCategories), [projects, getCategories]);
+  const stats = useMemo(() => computeStats(rows), [rows]);
+  const filtered = useMemo(() => sortRows(filterRows(rows, filters), sort), [rows, filters, sort]);
+
+  const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const current = Math.min(page, pages);
+  const visible = filtered.slice((current - 1) * pageSize, current * pageSize);
+
+  const online = projects.some(isConnected);
+  const canClear = JSON.stringify(filters) !== JSON.stringify(INITIAL_FILTERS);
+
+  // Toute modification de filtre ramène à la première page.
+  const patchFilters = (patch) => {
+    setSearchParams((params) => writeFilters(params, { ...readFilters(params, projects), ...patch }, projects));
+    setPage(1);
+  };
+  const clearFilters = () => {
+    setSearchParams((params) => writeFilters(params, INITIAL_FILTERS, projects));
+    setPage(1);
+  };
+
+  const create = () => navigate('/endpoints/new', {
+    state: { projectId: filters.project === 'all' ? undefined : filters.project },
+  });
+
+  return (
+    <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+      <WorkspaceSidebar
+        projects={projects}
+        total={rows.length}
+        online={online}
+        getCategories={getCategories}
+        filters={filters}
+        onFilter={patchFilters}
+        onCreate={create}
+        canCreate={projects.length > 0}
+      />
+
+      <div className="min-w-0 space-y-5">
+        <EndpointsHeader online={online} onCreate={create} canCreate={projects.length > 0} />
+        <EndpointStats stats={stats} />
+
+        <EndpointsToolbar
+          query={filters.query}
+          onQuery={(query) => patchFilters({ query })}
+          view={view}
+          onView={setView}
+          density={density}
+          onDensity={setDensity}
+          sort={sort}
+          onSort={setSort}
+        />
+        <EndpointFilters filters={filters} onChange={patchFilters} rows={rows} projects={projects} canClear={canClear} onClear={clearFilters} />
+        <QuickChips count={filtered.length} filters={filters} onChange={patchFilters} />
+
+        <div className="floating">
+          <section className="cut-frame" aria-label="Liste des endpoints">
+            {visible.length === 0 ? (
+              <p className="px-5 py-14 text-center text-sm text-[var(--text-muted)]">
+                {rows.length === 0 ? 'Aucun endpoint pour le moment.' : 'Aucun endpoint ne correspond à vos filtres.'}
+              </p>
+            ) : view === 'list' ? (
+              <EndpointTable rows={visible} density={density} />
+            ) : (
+              <EndpointCardGrid rows={visible} />
+            )}
+            <EndpointPagination
+              total={filtered.length}
+              page={current}
+              pages={pages}
+              pageSize={pageSize}
+              onPage={setPage}
+              onPageSize={(size) => { setPageSize(size); setPage(1); }}
+            />
+          </section>
         </div>
-        <form className="grid gap-4 sm:grid-cols-2">
-          <label className="space-y-2 text-sm text-[var(--text-soft)]">
-            Projet
-            <select className="w-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2.5 text-[var(--text)]">
-              <option value="">Sélectionner un projet</option>
-            </select>
-          </label>
-          <label className="space-y-2 text-sm text-[var(--text-soft)]">
-            Date
-            <input className="w-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2.5 text-[var(--text)]" type="date" />
-          </label>
-          <label className="space-y-2 text-sm text-[var(--text-soft)]">
-            Durée (heures)
-            <input className="w-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2.5 text-[var(--text)]" type="number" min="0.25" step="0.25" placeholder="Ex. 7,5" />
-          </label>
-          <label className="space-y-2 text-sm text-[var(--text-soft)]">
-            Catégorie
-            <select className="w-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2.5 text-[var(--text)]">
-              <option value="">Sélectionner une catégorie</option>
-              <option>Développement</option>
-              <option>Réunion</option>
-              <option>Support</option>
-            </select>
-          </label>
-          <label className="space-y-2 text-sm text-[var(--text-soft)] sm:col-span-2">
-            Description
-            <textarea className="min-h-28 w-full resize-y border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2.5 text-[var(--text)]" placeholder="Décrivez brièvement votre activité" />
-          </label>
-          <div className="sm:col-span-2">
-            <button className="inline-flex items-center gap-2 bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--bg)] transition-opacity hover:opacity-90" type="button">
-              <Send size={16} />
-              Enregistrer la saisie
-            </button>
-          </div>
-        </form>
-      </section>
+      </div>
 
-      <section className="cut-frame p-5 [--frame-bg:var(--surface)]" aria-labelledby="recent-entries-title">
-        <div className="mb-4 flex items-center gap-3">
-          <Clock3 className="text-[var(--cyan)]" size={20} />
-          <h2 id="recent-entries-title" className="font-display text-lg font-semibold">Saisies récentes</h2>
-        </div>
-        <p className="border border-dashed border-[var(--border)] px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-          Vos saisies apparaîtront ici une fois enregistrées.
-        </p>
-      </section>
     </div>
-  </div>
-);
+  );
+};
 
 export default ActivityEntry;

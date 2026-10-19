@@ -74,7 +74,21 @@ const useTasks = () => {
     [],
   );
 
-  return { tasks, addTask, updateTask, move, markRead, toggleStar };
+  const linkEndpoint = useCallback((taskId, endpoint) => {
+    setTasks((prev) =>
+      prev.map((task) => {
+        const linkedEndpoints = task.linkedEndpoints ?? [];
+        if (task.id !== taskId || linkedEndpoints.some((item) => item.id === endpoint.id && item.path === endpoint.path)) return task;
+        return {
+          ...task,
+          endpointIds: task.endpointIds.includes(endpoint.id) ? task.endpointIds : [...task.endpointIds, endpoint.id],
+          linkedEndpoints: [...linkedEndpoints, endpoint],
+        };
+      }),
+    );
+  }, []);
+
+  return { tasks, addTask, updateTask, move, markRead, toggleStar, linkEndpoint };
 };
 
 export default useTasks;

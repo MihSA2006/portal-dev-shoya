@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink, matchPath, useLocation } from 'react-router-dom';
-import { ChevronDown, Home, PanelLeftOpen } from 'lucide-react';
+import { BookOpen, ChevronDown, Home, PanelLeftOpen } from 'lucide-react';
 import ProjectBrand from './ProjectBrand';
 import ProjectNavGroup from './ProjectNavGroup';
 import ProjectPromo from './ProjectPromo';
@@ -12,7 +12,7 @@ const ENDPOINT_PATH = '/documentation/:projectSlug/endpoints/:endpointSlug';
  * Sidebar d'un projet : Overview, puis une catégorie repliable par groupe d'endpoints.
  * Utiliser key={project.id} pour réinitialiser l'état à chaque changement de projet.
  */
-const ProjectSidebar = ({ project, categories }) => {
+const ProjectSidebar = ({ project, categories, guides = [] }) => {
   const { pathname } = useLocation();
   const projectSlug = getProjectSlug(project);
   const base = `/documentation/${projectSlug}`;
@@ -65,6 +65,29 @@ const ProjectSidebar = ({ project, categories }) => {
             >
               <Home size={19} strokeWidth={1.75} className="shrink-0" /> Vue d'ensemble
             </NavLink>
+
+            {guides.length > 0 && (
+              <div className="space-y-1">
+                <p className="px-3.5 pt-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Guides</p>
+                {guides.map((guide) => (
+                  <NavLink
+                    key={guide.id}
+                    to={`${base}/guides/${guide.id}`}
+                    onClick={closeMobile}
+                    className={({ isActive }) =>
+                      `flex h-10 items-center gap-3 px-3.5 text-[13px] transition-colors ${
+                        isActive
+                          ? 'bg-[var(--accent-tint)] font-medium text-[var(--accent)]'
+                          : 'text-[var(--text-soft)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
+                      }`
+                    }
+                  >
+                    <BookOpen size={17} strokeWidth={1.75} className="shrink-0" />
+                    <span className="truncate">{guide.title}</span>
+                  </NavLink>
+                ))}
+              </div>
+            )}
 
             {categories.map((category) => (
               <ProjectNavGroup

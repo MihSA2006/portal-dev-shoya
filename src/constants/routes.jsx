@@ -5,6 +5,7 @@ import {
   PenLine,
   CheckSquare,
   CalendarOff,
+  BookOpen,
   Users,
   Settings,
 } from 'lucide-react';
@@ -15,6 +16,9 @@ import DocumentationProject from '../pages/DocumentationProject.jsx';
 import ActivityEntry from '../pages/ActivityEntry.jsx';
 import Tasks from '../pages/Tasks.jsx';
 import TaskDetail from '../pages/tasks/TaskDetail.jsx';
+import EndpointCreate from '../pages/documentation/EndpointCreate.jsx';
+import GuideCreate from '../pages/GuideCreate.jsx';
+import GuideEditor from '../pages/guides/GuideEditor.jsx';
 import Absences from '../pages/Absences.jsx';
 import SettingsPage from '../pages/Settings.jsx';
 
@@ -34,6 +38,7 @@ export const PAGES = [
   { path: '/', name: 'Tableau de bord', title: `Tableau de bord | ${SUFFIX}`, icon: LayoutDashboard, element: <Dashboard /> },
   { path: '/documentation', name: 'Documentation', title: `Documentation | ${SUFFIX}`, icon: FileText, element: <Documentation />, submenu: 'projects' },
   { path: '/activity-entry', name: 'Saisie', title: `Saisie | ${SUFFIX}`, icon: PenLine, element: <ActivityEntry /> },
+  { path: '/guides', name: 'Guides', title: `Guides | ${SUFFIX}`, icon: BookOpen, element: <GuideCreate /> },
   { path: '/tasks', name: 'Tâches', title: `Tâches | ${SUFFIX}`, icon: CheckSquare, element: <Tasks />, badge: 3 },
   { path: '/absences', name: 'Absences', title: `Absences | ${SUFFIX}`, icon: CalendarOff, element: <Absences /> },
   {
@@ -53,6 +58,10 @@ export const PAGES = [
 /** Routes absentes du menu (pages dynamiques). */
 const HIDDEN_ROUTES = [
   { path: '/tasks/:taskKey', title: `Détail de la tâche | ${SUFFIX}`, element: <TaskDetail /> },
+  { path: '/endpoints/new', title: `Créer un endpoint | ${SUFFIX}`, element: <EndpointCreate /> },
+  // /guides/new : compatibilité du lien de création du WorkspaceSidebar.
+  { path: '/guides/new', element: <Navigate to="/guides" replace /> },
+  { path: '/guides/:guideId', title: `Éditeur de guide | ${SUFFIX}`, element: <GuideEditor /> },
   { path: '/documentation/:projectSlug/*', title: `Documentation | ${SUFFIX}`, element: <DocumentationProject /> },
 ];
 

@@ -52,7 +52,10 @@ const TaskDetail = () => {
 
   // En édition, l'interface reflète le brouillon ; sinon la tâche enregistrée.
   const view = editing ? draft : task;
-  const endpoints = task.endpointIds.map((id) => ENDPOINTS_BY_ID[id]).filter(Boolean);
+  const endpoints = [
+    ...task.endpointIds.map((id) => ENDPOINTS_BY_ID[id]).filter(Boolean),
+    ...(task.linkedEndpoints ?? []),
+  ];
 
   const change = (key, value) => {
     setDraft((prev) => ({ ...prev, [key]: value }));

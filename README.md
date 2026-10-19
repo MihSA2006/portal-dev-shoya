@@ -54,6 +54,10 @@ Open the local URL printed by Vite in your browser.
 | `/documentation` | Documentation project directory and search |
 | `/documentation/:projectSlug` | Project documentation overview |
 | `/documentation/:projectSlug/endpoints/:endpointSlug` | Endpoint details and code examples |
+| `/documentation/:projectSlug/guides/:guideId` | Read a project guide |
+| `/endpoints/new` | Create an endpoint with full documentation |
+| `/guides` | Guides list and guide creation |
+| `/guides/:guideId` | Guide Markdown editor |
 | `/activity-entry` | Activity entry |
 | `/tasks` | Task board |
 | `/tasks/:taskKey` | Task details |
