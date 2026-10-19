@@ -502,6 +502,35 @@ input[type="search"]:focus-visible {
   overflow: hidden;
 }
 
+
+/* Éditeur Markdown : le textarea est transparent, la coloration est dessinée dessous. */
+.md-textarea {
+  -webkit-text-fill-color: transparent;
+  tab-size: 2;
+}
+
+.md-textarea::selection {
+  background: var(--accent-glow);
+  -webkit-text-fill-color: transparent;
+}
+
+/* Aperçu : la colonne latérale passe à droite quand le panneau est assez large (requête de conteneur). */
+.guide-preview {
+  container-type: inline-size;
+}
+
+.guide-preview-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@container (min-width: 760px) {
+  .guide-preview-grid {
+    grid-template-columns: minmax(0, 1fr) 240px;
+  }
+}
+
+
 @media (prefers-reduced-motion: reduce) {
   .task-col,
   .task-card-wrap { transition: none; }
