@@ -27,9 +27,9 @@ export default function Layout() {
           onToggleCollapse={() => setCollapsed((c) => !c)}
         />
 
-        <main className="flex-1 min-w-0 p-4 md:p-4 md:pl-2">
-          <div>
-            <div className="animate-enter p-0 md:p-0">
+        <main className="flex min-w-0 flex-1 flex-col p-4 md:p-4 md:pl-2">
+          <div className="flex min-h-0 flex-1 flex-col">
+            <div className="animate-enter flex min-h-0 flex-1 flex-col p-0 md:p-0">
               <Outlet />
             </div>
           </div>

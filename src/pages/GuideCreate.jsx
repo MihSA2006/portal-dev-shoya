@@ -13,7 +13,7 @@ const GuideCreate = () => {
   const create = (data) => navigate(`/guides/${createGuide(data).id}`);
 
   return (
-    <div className="space-y-6">
+    <div className="flex min-h-0 flex-1 flex-col space-y-6">
       <header className="cut-frame [--frame-bg:var(--surface)]">
         <div className="p-5">
           <h1 className="font-display text-3xl font-semibold">Guides</h1>
@@ -21,9 +21,9 @@ const GuideCreate = () => {
         </div>
       </header>
 
-      <div className="cut-frame overflow-hidden [--frame-bg:var(--surface)]">
+      <div className="cut-frame flex min-h-0 flex-1 flex-col overflow-hidden [--frame-bg:var(--surface)]">
         <NewGuideForm projects={projects} guides={guides} onCreate={create} />
-        <div className="border-t border-[var(--border)]">
+        <div className="min-h-0 flex-1 overflow-y-auto border-t border-[var(--border)]">
           <GuideList guides={guides} projects={projects} />
         </div>
       </div>
