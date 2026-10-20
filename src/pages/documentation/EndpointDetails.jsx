@@ -23,6 +23,8 @@ import RequestBodyCard from '../../components/documentation/endpoint/RequestBody
 import ResponseCard from '../../components/documentation/endpoint/ResponseCard';
 import EndpointEditor from '../../components/documentation/endpoint/edit/EndpointEditor';
 import FloatingSaveBar from '../../components/documentation/endpoint/edit/FloatingSaveBar';
+import { EndpointSkeleton } from '../../components/ui/LoadingSkeleton';
+import useInitialSkeleton from '../../hooks/useInitialSkeleton';
 
 /** Détail d'un endpoint (consultation + édition) : même page pour tous les projets. Utiliser key={project.id} pour réinitialiser l'environnement. */
 const EndpointDetails = ({ project, categories }) => {
@@ -44,6 +46,7 @@ const EndpointDetails = ({ project, categories }) => {
 };
 
 function EndpointDetailsView({ project, categories, slug, env, onEnv }) {
+  const loading = useInitialSkeleton();
   const baseEndpoint = findEndpointBySlug(categories, slug);
   const baseDetails = useMemo(
     () => (baseEndpoint ? getEndpointDetails(project, baseEndpoint) : null),
@@ -93,6 +96,8 @@ function EndpointDetailsView({ project, categories, slug, env, onEnv }) {
     );
   }
 
+  if (loading) return <EndpointSkeleton />;
+
   const { endpoint, details } = live ?? saved;
   const base = getBaseUrl(project, env);
   const url = base ? `${base}${endpoint.path}` : '';
@@ -134,7 +139,7 @@ function EndpointDetailsView({ project, categories, slug, env, onEnv }) {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="page-content-enter space-y-5">
       <div className="ep-layout items-start">
         <div className="min-w-0 space-y-5">
           <div ref={headerRef}>

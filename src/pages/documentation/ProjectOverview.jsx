@@ -9,9 +9,12 @@ import OverviewHero from '../../components/documentation/overview/OverviewHero';
 import ProjectInfoCard from '../../components/documentation/overview/ProjectInfoCard';
 import QuickStartCard from '../../components/documentation/overview/QuickStartCard';
 import RequestOverviewCard from '../../components/documentation/overview/RequestOverviewCard';
+import { ProjectOverviewSkeleton } from '../../components/ui/LoadingSkeleton';
+import useInitialSkeleton from '../../hooks/useInitialSkeleton';
 
 /** Vue d'ensemble : même page pour tous les projets. Utiliser key={project.id} pour réinitialiser l'état. */
 const ProjectOverview = ({ project, categories }) => {
+  const loading = useInitialSkeleton();
   const overview = getOverview(project.id);
 
   // Environnement affiché : staging par défaut, sinon le premier dont l'URL est renseignée.
@@ -21,8 +24,10 @@ const ProjectOverview = ({ project, categories }) => {
   const quickStart = resolveQuickStart(overview, categories);
   const status = overallStatus(ENVIRONMENTS.map(({ key }) => envHealth(project, overview, key).status));
 
+  if (loading) return <ProjectOverviewSkeleton />;
+
   return (
-    <div className="space-y-5">
+    <div className="page-content-enter space-y-5">
       <div className="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-5">
           <OverviewHero project={project} env={env} onEnv={setEnv} baseUrl={baseUrl} deployMinutes={overview.deployMinutes} />

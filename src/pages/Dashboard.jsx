@@ -8,16 +8,21 @@ import DocumentationHealthCard from '../components/dashboard/DocumentationHealth
 import RecentActivityCard from '../components/dashboard/RecentActivityCard';
 import OpenAlertsCard from '../components/dashboard/OpenAlertsCard';
 import ApiStatusCard from '../components/dashboard/ApiStatusCard';
+import { DashboardSkeleton } from '../components/ui/LoadingSkeleton';
 import { CYCLE, PROJECTS } from '../constants/dashboard';
 import { buildDashboardView } from '../utils/dashboard';
+import useInitialSkeleton from '../hooks/useInitialSkeleton';
 
 const Dashboard = () => {
+  const loading = useInitialSkeleton();
   const [projectId, setProjectId] = useState('');
   const view = useMemo(() => buildDashboardView(projectId), [projectId]);
   const scope = PROJECTS.find((p) => p.id === projectId)?.name;
 
+  if (loading) return <DashboardSkeleton />;
+
   return (
-    <div className="space-y-5">
+    <div className="page-content-enter space-y-5">
       <DashboardHeader cycle={CYCLE} />
 
       <DashboardFilters projects={PROJECTS} value={projectId} onChange={setProjectId} />

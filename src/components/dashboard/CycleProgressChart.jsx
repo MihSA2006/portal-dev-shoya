@@ -9,7 +9,7 @@ const SERIES = [
   { key: 'expected', label: 'Progression attendue', color: 'var(--accent)',
     background: 'linear-gradient(to top, var(--accent-strong), var(--accent))' },
   { key: 'actual', label: 'Progression réelle', color: 'var(--role-lead)',
-    background: 'linear-gradient(to top, color-mix(in srgb, var(--role-lead) 65%, #000), var(--role-lead))' },
+    background: 'linear-gradient(to top, color-mix(in srgb, var(--role-lead) 65%, var(--shadow)), var(--role-lead))' },
 ];
 
 const fmtGap = (n) => `${n > 0 ? '+' : n < 0 ? '−' : ''}${Math.abs(n)} pts`;

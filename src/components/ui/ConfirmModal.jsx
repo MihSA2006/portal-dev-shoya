@@ -18,8 +18,8 @@ export default function ConfirmModal({
           onClick={onConfirm}
           className={`h-10 border px-4 text-sm font-semibold transition-colors ${
             danger
-              ? 'border-[var(--danger)] bg-[color-mix(in_srgb,var(--danger)_14%,transparent)] text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white'
-              : 'border-[var(--accent)] bg-[var(--accent)] text-[var(--on-accent)] hover:bg-[var(--accent-strong)]'
+              ? 'border-[var(--danger)] bg-[color-mix(in_srgb,var(--danger)_14%,transparent)] text-[var(--danger)] hover:bg-[var(--danger)] hover:text-[var(--on-danger)]'
+              : 'border-[var(--accent)] bg-[var(--accent)] text-[var(--on-accent)] hover:bg-[var(--accent-strong)] hover:text-[var(--on-accent-hover)]'
           }`}
         >
           {confirmLabel}

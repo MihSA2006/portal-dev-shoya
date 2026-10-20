@@ -16,7 +16,7 @@ export default function EditActions({ dirty, onCancel, onSave }) {
         onClick={onSave}
         disabled={!dirty}
         title={dirty ? undefined : 'Aucune modification à enregistrer'}
-        className="cut-frame cut-sm inline-flex h-9 items-center gap-2 px-5 text-sm font-semibold text-[var(--on-accent)] [--frame-border:var(--accent)] [--frame-bg:var(--accent)] enabled:hover:[--frame-bg:var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50"
+        className="cut-frame cut-sm inline-flex h-9 items-center gap-2 px-5 text-sm font-semibold text-[var(--on-accent)] enabled:hover:text-[var(--on-accent-hover)] [--frame-border:var(--accent)] [--frame-bg:var(--accent)] enabled:hover:[--frame-bg:var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Save size={15} /> Enregistrer
       </button>

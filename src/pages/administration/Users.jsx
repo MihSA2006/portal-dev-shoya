@@ -6,6 +6,8 @@ import UserDetailPanel from '../../components/users/UserDetailPanel';
 import NewAccountModal from '../../components/users/NewAccountModal';
 import UpdateAccountModal from '../../components/users/UpdateAccountModal';
 import { ROLES, ROLE_OPTIONS } from '../../constants/roles';
+import { AdminUsersSkeleton } from '../../components/ui/LoadingSkeleton';
+import useInitialSkeleton from '../../hooks/useInitialSkeleton';
 
 const PAGE_SIZE = 8;
 
@@ -29,6 +31,7 @@ const STATUS_FILTER = [
 ];
 
 const Users = () => {
+  const loading = useInitialSkeleton();
   const [users, setUsers] = useState(INITIAL_USERS);
   const [query, setQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
@@ -68,6 +71,8 @@ const Users = () => {
     ];
   }, [users]);
 
+  if (loading) return <AdminUsersSkeleton />;
+
   /* ───── Actions ───── */
   const toggleSelect = (id) => setSelectedId((cur) => (cur === id ? null : id));
   const goToDisable = (id) => {
@@ -81,7 +86,7 @@ const Users = () => {
   const setStatus = (id, status) => updateUser(id, { status });
 
   return (
-    <div className="space-y-5">
+    <div className="page-content-enter space-y-5">
       <div className={`grid gap-5 ${selected ? 'xl:grid-cols-[minmax(0,1fr)_21rem]' : ''}`}>
         <section className="cut-frame [--frame-bg:var(--surface)]">
           <div className="space-y-5 p-5">
@@ -101,7 +106,7 @@ const Users = () => {
               <button
                 type="button"
                 onClick={() => setModal({ type: 'new' })}
-                className="cut-frame cut-sm inline-flex h-11 items-center gap-2 px-5 text-sm font-semibold text-[var(--on-accent)] [--frame-border:var(--accent)] [--frame-bg:var(--accent)] hover:[--frame-bg:var(--accent-strong)]"
+                className="cut-frame cut-sm inline-flex h-11 items-center gap-2 px-5 text-sm font-semibold text-[var(--on-accent)] hover:text-[var(--on-accent-hover)] [--frame-border:var(--accent)] [--frame-bg:var(--accent)] hover:[--frame-bg:var(--accent-strong)]"
               >
                 <UserPlus size={18} /> Nouveau compte
               </button>

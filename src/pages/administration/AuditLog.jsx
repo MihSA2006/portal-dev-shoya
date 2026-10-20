@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ShieldCheck, Download } from 'lucide-react';
 import AuditFilters from '../../components/audit/AuditFilters';
 import AuditTable from '../../components/audit/AuditTable';
@@ -6,6 +6,8 @@ import AuditDetailModal from '../../components/audit/AuditDetailModal';
 import Pagination from '../../components/ui/Pagination';
 import { downloadCsv } from '../../utils/csv';
 import { ACTIONS, RESULTS, RANGE_MS, generateAuditEvents, formatTimestamp } from '../../constants/audit';
+import { AdminTableSkeleton } from '../../components/ui/LoadingSkeleton';
+import useInitialSkeleton from '../../hooks/useInitialSkeleton';
 
 const PAGE_SIZE = 10;
 
@@ -34,13 +36,20 @@ const CSV_COLUMNS = [
 ];
 
 const AuditLog = () => {
+  const loading = useInitialSkeleton();
+  const [loadedAt, setLoadedAt] = useState(null);
   const [filters, setFilters] = useState({ user: '', action: '', project: '', range: 'week', result: '' });
   const [sort, setSort] = useState({ key: 'timestamp', dir: 'desc' });
   const [page, setPage] = useState(1);
   const [detail, setDetail] = useState(null);
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => setLoadedAt(Date.now()), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   const filtered = useMemo(() => {
-    const now = Date.now();
+    const now = loadedAt ?? 0;
     const span = RANGE_MS[filters.range];
     const get = SORT_VALUE[sort.key];
     const dir = sort.dir === 'asc' ? 1 : -1;
@@ -60,7 +69,7 @@ const AuditLog = () => {
         const c = typeof x === 'number' ? x - y : String(x).localeCompare(String(y), 'fr', { numeric: true });
         return c * dir;
       });
-  }, [filters, sort]);
+  }, [filters, loadedAt, sort]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
@@ -76,8 +85,10 @@ const AuditLog = () => {
   const exportCsv = () =>
     downloadCsv(`journal-audit-${new Date().toISOString().slice(0, 10)}.csv`, CSV_COLUMNS, filtered);
 
+  if (loading || loadedAt === null) return <AdminTableSkeleton label="Chargement du journal d'audit" />;
+
   return (
-    <div className="space-y-5">
+    <div className="page-content-enter space-y-5">
       {/* En-tête */}
       <header className="cut-frame flex flex-wrap items-center justify-between gap-4 p-5 [--frame-bg:var(--surface)]">
         <div className="flex items-center gap-4">

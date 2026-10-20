@@ -7,8 +7,11 @@ import DocsHeader from '../components/documentation/DocsHeader';
 import DocProjectCard from '../components/documentation/DocProjectCard';
 import RecentlyUpdated from '../components/documentation/RecentlyUpdated';
 import RecentlyViewed from '../components/documentation/RecentlyViewed';
+import { DocumentationSkeleton } from '../components/ui/LoadingSkeleton';
+import useInitialSkeleton from '../hooks/useInitialSkeleton';
 
 const Documentation = () => {
+  const loading = useInitialSkeleton();
   const { projects } = useProjects();
   const [query, setQuery] = useState('');
   const q = query.trim().toLowerCase();
@@ -24,6 +27,8 @@ const Documentation = () => {
     !q || [p.name, p.prefix, p.repo, p.tagline].some((v) => v.toLowerCase().includes(q))
   );
 
+  if (loading) return <DocumentationSkeleton />;
+
   // Associe chaque événement à son projet (les projets supprimés sont ignorés).
   const resolve = (list) => {
     const byId = new Map(entries.map((e) => [e.project.id, e]));
@@ -34,7 +39,7 @@ const Documentation = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="page-content-enter space-y-6">
       <DocsHeader stats={stats} query={query} onQuery={setQuery} />
 
       {projects.length === 0 ? (

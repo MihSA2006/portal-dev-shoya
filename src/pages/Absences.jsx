@@ -15,10 +15,13 @@ import {
   absencesToCsv, computeStats, downloadCsv, filterRequests, nextAbsence, overlaps, visibleOnCalendar,
 } from '../utils/absences';
 import { endOfMonth, formatDayLong, startOfMonth, todayISO, weekDays } from '../utils/calendar';
+import { AbsencesSkeleton } from '../components/ui/LoadingSkeleton';
+import useInitialSkeleton from '../hooks/useInitialSkeleton';
 
 const DEFAULT_CALENDAR = { view: 'month', cursor: todayISO(), employee: 'all', type: 'all' };
 
 const Absences = () => {
+  const loading = useInitialSkeleton();
   const { absences, addAbsence, updateAbsence, decide, removeAbsence } = useAbsences();
   const [calendar, setCalendar] = useState(DEFAULT_CALENDAR);
   const [filters, setFilters] = useState(DEFAULT_REQUEST_FILTERS);
@@ -41,6 +44,8 @@ const Absences = () => {
   const openCreate = (prefill) => setPanel({ mode: 'create', prefill });
   const openDetail = (id, extra) => setPanel({ mode: 'detail', id, ...extra });
   const selectRange = useCallback((startDate, endDate) => setPanel({ mode: 'create', prefill: { startDate, endDate } }), []);
+
+  if (loading) return <AbsencesSkeleton />;
 
   // ── Actions ──
   const handleCreate = (values) => {
@@ -130,7 +135,7 @@ const Absences = () => {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="page-content-enter space-y-5">
       <div className={`grid items-start gap-5 ${panelBody ? 'lg:grid-cols-[minmax(0,1fr)_22rem]' : ''}`}>
         <div className="min-w-0 space-y-5">
           <AbsencesHeader onCreate={() => openCreate()} onExport={handleExport} />

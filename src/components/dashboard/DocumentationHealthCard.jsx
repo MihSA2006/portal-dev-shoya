@@ -119,7 +119,7 @@ export default function DocumentationHealthCard({ health, projects, selectedId, 
                       style={{
                         width: mounted ? `${p.docHealth.completed}%` : 0,
                         transitionDelay: `${i * 100}ms`,
-                        background: 'linear-gradient(to right, color-mix(in srgb, var(--role-lead) 65%, #000), var(--role-lead))',
+                        background: 'linear-gradient(to right, color-mix(in srgb, var(--role-lead) 65%, var(--shadow)), var(--role-lead))',
                       }}
                     />
                   </span>

@@ -122,7 +122,7 @@ export default function AccountForm({ initial, showStatus = false, submitLabel, 
         <button type="button" onClick={onCancel} className="h-10 border border-[var(--border-strong)] px-4 text-sm text-[var(--text-soft)] transition-colors hover:border-[var(--accent)] hover:text-[var(--text)]">
           Annuler
         </button>
-        <button type="submit" className="cut-frame cut-sm inline-flex h-10 items-center px-5 text-sm font-semibold text-[var(--on-accent)] [--frame-border:var(--accent)] [--frame-bg:var(--accent)] hover:[--frame-bg:var(--accent-strong)]">
+        <button type="submit" className="cut-frame cut-sm inline-flex h-10 items-center px-5 text-sm font-semibold text-[var(--on-accent)] hover:text-[var(--on-accent-hover)] [--frame-border:var(--accent)] [--frame-bg:var(--accent)] hover:[--frame-bg:var(--accent-strong)]">
           {submitLabel}
         </button>
       </div>

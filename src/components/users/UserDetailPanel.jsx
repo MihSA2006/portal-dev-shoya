@@ -60,7 +60,7 @@ export default function UserDetailPanel({ user, onDisable, onReactivate, onCance
             <button
               type="button"
               onClick={() => onReactivate(user.id)}
-              className="cut-frame cut-sm mt-4 inline-flex h-10 items-center gap-2 px-4 text-sm font-semibold text-[var(--on-accent)] [--frame-border:var(--accent)] [--frame-bg:var(--accent)] hover:[--frame-bg:var(--accent-strong)]"
+              className="cut-frame cut-sm mt-4 inline-flex h-10 items-center gap-2 px-4 text-sm font-semibold text-[var(--on-accent)] hover:text-[var(--on-accent-hover)] [--frame-border:var(--accent)] [--frame-bg:var(--accent)] hover:[--frame-bg:var(--accent-strong)]"
             >
               <UserCheck size={16} /> Réactiver le compte
             </button>
@@ -94,7 +94,7 @@ export default function UserDetailPanel({ user, onDisable, onReactivate, onCance
 
             <label className="mt-4 flex cursor-pointer items-center gap-3 text-sm text-[var(--text-soft)]">
               <input type="checkbox" className="peer sr-only" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
-              <span className="grid h-[18px] w-[18px] shrink-0 place-items-center border border-[var(--border-strong)] text-white peer-checked:border-[var(--danger)] peer-checked:bg-[var(--danger)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--accent)] [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100">
+              <span className="grid h-[18px] w-[18px] shrink-0 place-items-center border border-[var(--border-strong)] text-[var(--on-danger)] peer-checked:border-[var(--danger)] peer-checked:bg-[var(--danger)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--accent)] [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100">
                 <Check size={13} strokeWidth={3} />
               </span>
               Je comprends les conséquences
@@ -112,7 +112,7 @@ export default function UserDetailPanel({ user, onDisable, onReactivate, onCance
                 type="button"
                 disabled={!confirmed}
                 onClick={() => onDisable(user.id)}
-                className="flex h-11 items-center justify-center gap-2 border border-[var(--danger)] bg-[color-mix(in_srgb,var(--danger)_14%,transparent)] text-sm font-medium text-[var(--danger)] transition-colors hover:bg-[var(--danger)] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[color-mix(in_srgb,var(--danger)_14%,transparent)] disabled:hover:text-[var(--danger)]"
+                className="flex h-11 items-center justify-center gap-2 border border-[var(--danger)] bg-[color-mix(in_srgb,var(--danger)_14%,transparent)] text-sm font-medium text-[var(--danger)] transition-colors hover:bg-[var(--danger)] hover:text-[var(--on-danger)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[color-mix(in_srgb,var(--danger)_14%,transparent)] disabled:hover:text-[var(--danger)]"
               >
                 <Ban size={16} /> Désactiver
               </button>

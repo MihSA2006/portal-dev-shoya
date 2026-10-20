@@ -61,7 +61,7 @@ const ProjectDetail = ({ project, onSave, onDelete }) => {
           )}
           <button
             type="button"
-            className="btn btn-outline !border-[var(--danger)] !bg-[color-mix(in_srgb,var(--danger)_14%,transparent)] !text-[var(--danger)] hover:!bg-[var(--danger)] hover:!text-white"
+            className="btn btn-outline !border-[var(--danger)] !bg-[color-mix(in_srgb,var(--danger)_14%,transparent)] !text-[var(--danger)] hover:!bg-[var(--danger)] hover:!text-[var(--on-danger)]"
             onClick={() => setConfirmDelete(true)}
           >
             <Trash2 size={16} />
@@ -96,7 +96,7 @@ const ProjectDetail = ({ project, onSave, onDelete }) => {
               </button>
               <button
                 type="button"
-                className="btn border-[var(--danger)] bg-[var(--danger)] text-white hover:opacity-90"
+                className="btn border-[var(--danger)] bg-[var(--danger)] text-[var(--on-danger)] hover:opacity-90"
                 onClick={() => onDelete(project.id)}
               >
                 <Trash2 size={16} />

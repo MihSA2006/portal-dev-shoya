@@ -16,6 +16,8 @@ import EndpointsHeader from '../components/endpoints/EndpointsHeader';
 import EndpointsToolbar from '../components/endpoints/EndpointsToolbar';
 import QuickChips from '../components/endpoints/QuickChips';
 import WorkspaceSidebar from '../components/endpoints/WorkspaceSidebar';
+import { ActivityEntrySkeleton } from '../components/ui/LoadingSkeleton';
+import useInitialSkeleton from '../hooks/useInitialSkeleton';
 
 const FILTER_PARAMS = ['q', 'project', 'method', 'status', 'section', 'version', 'owner', 'doc', 'recent'];
 
@@ -60,6 +62,7 @@ const writeFilters = (params, filters, projects) => {
 
 /** Saisie : espace endpoints (sidebar du workspace + liste globale de tous les endpoints). */
 const ActivityEntry = () => {
+  const loading = useInitialSkeleton();
   const { projects } = useProjects();
   const { getCategories } = useEndpoints();
   const navigate = useNavigate();
@@ -83,6 +86,8 @@ const ActivityEntry = () => {
   const online = projects.some(isConnected);
   const canClear = JSON.stringify(filters) !== JSON.stringify(INITIAL_FILTERS);
 
+  if (loading) return <ActivityEntrySkeleton />;
+
   // Toute modification de filtre ramène à la première page.
   const patchFilters = (patch) => {
     setSearchParams((params) => writeFilters(params, { ...readFilters(params, projects), ...patch }, projects));
@@ -98,7 +103,7 @@ const ActivityEntry = () => {
   });
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+    <div className="page-content-enter grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
       <WorkspaceSidebar
         projects={projects}
         total={rows.length}

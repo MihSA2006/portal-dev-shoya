@@ -29,8 +29,8 @@
   --border-strong: rgba(16, 224, 138, 0.38);
 
   --accent: #14e08c;
-  /* Luxury green. *
-  --accent-strong: #0fb874;
+  /* Luxury green. */
+  --accent-strong: #047857;
   --accent-glow: rgba(20, 224, 140, 0.35);
 
   --cyan: #22d3ee;
@@ -45,6 +45,8 @@
   --cut: 14px;
   /* Clipped corner size. */
   --on-accent: #03140d;
+  --on-accent-hover: #ffffff;
+  --on-danger: #1a0506;
 }
 
 /* Light mode. */
@@ -78,6 +80,8 @@
 
   --shadow: rgba(10, 40, 30, 0.22);
   --on-accent: #ffffff;
+  --on-accent-hover: #ffffff;
+  --on-danger: #ffffff;
 }
 
 [data-tone="accent"] { --tone: var(--accent); }
@@ -103,6 +107,19 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  color-scheme: inherit;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"] {
+  accent-color: var(--accent);
 }
 
 * {
@@ -286,6 +303,43 @@ body {
   animation: enter .24s ease-out both;
 }
 
+.page-content-enter {
+  animation: page-content-in .38s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+@keyframes page-content-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.skeleton-block {
+  background: linear-gradient(
+    105deg,
+    var(--surface-2) 35%,
+    color-mix(in srgb, var(--surface-2) 78%, var(--text-muted)) 50%,
+    var(--surface-2) 65%
+  );
+  background-size: 220% 100%;
+  animation: skeleton-shimmer 2.1s ease-in-out infinite, skeleton-drift 3.2s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -120% 0; }
+}
+
+@keyframes skeleton-drift {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -1px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-content-enter,
+  .skeleton-block {
+    animation: none;
+  }
+}
+
 .sidebar-submenu {
   display: grid;
   grid-template-rows: 0fr;
@@ -425,6 +479,7 @@ input[type="search"]:focus-visible {
 
 .btn-primary:not(:disabled):hover {
   background: var(--accent-strong);
+  color: var(--on-accent-hover);
   box-shadow: 0 0 18px var(--accent-glow);
 }
 

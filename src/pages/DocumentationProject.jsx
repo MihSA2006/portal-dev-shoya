@@ -34,7 +34,7 @@ const DocumentationProject = () => {
   const projectGuides = guides.filter((guide) => guide.projectId === project.id);
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+    <div className="page-content-enter grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
       <ProjectSidebar key={project.id} project={project} categories={categories} guides={projectGuides} />
 
       <div className="min-w-0">

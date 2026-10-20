@@ -4,6 +4,8 @@ import AlertRuleCard from '../../components/alerts/AlertRuleCard';
 import GlobalChannels from '../../components/alerts/GlobalChannels';
 import DailyReportCard from '../../components/alerts/DailyReportCard';
 import { ALERT_RULES, createDefaultAlertConfig } from '../../constants/alerts';
+import { AdminTableSkeleton } from '../../components/ui/LoadingSkeleton';
+import useInitialSkeleton from '../../hooks/useInitialSkeleton';
 
 const Pulse = () => (
   <svg width="90" height="22" viewBox="0 0 90 22" fill="none" aria-hidden="true" className="text-[var(--accent)]">
@@ -12,6 +14,7 @@ const Pulse = () => (
 );
 
 const AlertThresholds = () => {
+  const loading = useInitialSkeleton();
   const [config, setConfig] = useState(createDefaultAlertConfig);
   const [saved, setSaved] = useState(() => JSON.stringify(config));
   const dirty = JSON.stringify(config) !== saved;
@@ -26,8 +29,10 @@ const AlertThresholds = () => {
     setSaved(JSON.stringify(config));
   };
 
+  if (loading) return <AdminTableSkeleton label="Chargement des paramètres d'alerte" />;
+
   return (
-    <div className="space-y-5">
+    <div className="page-content-enter space-y-5">
       {/* En-tête */}
       <header className="cut-frame [--frame-bg:var(--surface)]">
         <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
@@ -89,7 +94,7 @@ const AlertThresholds = () => {
             type="button"
             onClick={save}
             disabled={!dirty}
-            className="cut-frame cut-sm inline-flex h-12 items-center gap-3 px-6 text-sm font-semibold text-[var(--on-accent)] [--frame-border:var(--accent)] [--frame-bg:var(--accent)] enabled:hover:[--frame-bg:var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="cut-frame cut-sm inline-flex h-12 items-center gap-3 px-6 text-sm font-semibold text-[var(--on-accent)] enabled:hover:text-[var(--on-accent-hover)] [--frame-border:var(--accent)] [--frame-bg:var(--accent)] enabled:hover:[--frame-bg:var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Save size={18} /> Enregistrer les paramètres <ChevronRight size={16} />
           </button>
