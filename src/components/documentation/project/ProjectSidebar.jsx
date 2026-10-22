@@ -56,7 +56,7 @@ const ProjectSidebar = ({ project, categories, guides = [] }) => {
               end
               onClick={closeMobile}
               className={({ isActive }) =>
-                `flex h-11 items-center gap-3 px-3.5 text-sm font-medium transition-colors ${
+                `flex h-11 shrink-0 items-center gap-3 px-3.5 text-sm font-medium transition-colors ${
                   isActive
                     ? 'cut-frame cut-sm [--frame-border:var(--accent)] [--frame-bg:var(--accent-tint)] text-[var(--accent)]'
                     : 'text-[var(--text-soft)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'

@@ -21,6 +21,7 @@ import GuideCreate from '../pages/GuideCreate.jsx';
 import GuideEditor from '../pages/guides/GuideEditor.jsx';
 import Absences from '../pages/Absences.jsx';
 import SettingsPage from '../pages/Settings.jsx';
+import Login from '../pages/Login.jsx';
 
 // Administration sub-pages.
 import AdminUsers from '../pages/administration/Users.jsx';
@@ -63,6 +64,11 @@ const HIDDEN_ROUTES = [
   { path: '/guides/new', element: <Navigate to="/guides" replace /> },
   { path: '/guides/:guideId', title: `Éditeur de guide | ${SUFFIX}`, element: <GuideEditor /> },
   { path: '/documentation/:projectSlug/*', title: `Documentation | ${SUFFIX}`, element: <DocumentationProject /> },
+];
+
+/** Pages plein écran, rendues SANS Layout (ni Navbar ni Sidebar). */
+export const STANDALONE_ROUTES = [
+  { path: '/login', title: `Connexion | ${SUFFIX}`, element: <Login /> },
 ];
 
 /** Flat list of routes (used by App). /administration redirects to its first child. */
