@@ -483,10 +483,45 @@ input[type="search"]:focus-visible {
   box-shadow: 0 0 18px var(--accent-glow);
 }
 
+.login-submit-loading {
+  overflow: hidden;
+  animation: login-submit-pop .65s ease-in-out both;
+  box-shadow: 0 0 24px var(--accent-glow);
+}
+
+.login-submit-loading::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, .38) 50%, transparent 80%);
+  content: "";
+  transform: translateX(-100%);
+  animation: login-submit-shine .65s ease-out both;
+  pointer-events: none;
+}
+
+@keyframes login-submit-pop {
+  0%, 100% { transform: scale(1); }
+  35% { transform: scale(1.025); }
+  70% { transform: scale(.99); }
+}
+
+@keyframes login-submit-shine {
+  to { transform: translateX(100%); }
+}
+
 .btn-outline {
   border-color: var(--border-strong);
   background: var(--bg-elevated);
   color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-submit-loading,
+  .login-submit-loading::before,
+  .login-submit-loading .animate-spin {
+    animation: none;
+  }
 }
 
 .btn-outline:not(:disabled):hover {
@@ -676,6 +711,199 @@ input[type="search"]:focus-visible {
   .abs-panel { animation: none; }
   .abs-day, .abs-bar { transition: none; }
 }
+
+
+/* ===== Variables de la page de connexion (sombre par défaut, clair via data-theme) ===== */
+.login-page {
+  --login-card: rgba(8, 20, 17, 0.62);
+  --login-card-line: rgba(20, 224, 140, 0.55);
+  --login-ring: rgba(20, 224, 140, 0.26);
+  --login-shadow: rgba(0, 0, 0, 0.6);
+  --login-field: rgba(255, 255, 255, 0.04);
+  --login-field-line: rgba(20, 224, 140, 0.3);
+  --login-line: rgba(20, 224, 140, 0.32);
+  background: var(--bg);
+}
+
+[data-theme="light"] .login-page {
+  --login-card: rgba(255, 255, 255, 0.74);
+  --login-card-line: rgba(4, 120, 87, 0.42);
+  --login-ring: rgba(4, 120, 87, 0.2);
+  --login-shadow: rgba(10, 60, 45, 0.3);
+  --login-field: rgba(255, 255, 255, 0.75);
+  --login-field-line: rgba(4, 120, 87, 0.28);
+  --login-line: rgba(4, 120, 87, 0.32);
+}
+
+/* ===== Arrière-plan : fondu enchaîné entre les deux images (ne dépend d'aucun JavaScript) ===== */
+.login-bg-layer {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  transition: opacity 0.9s ease;
+}
+
+.login-bg-dark {
+  background-image: linear-gradient(90deg, rgba(3, 10, 8, 0.55), rgba(3, 10, 8, 0.12) 55%, transparent), var(--bg-img);
+  opacity: 1;
+}
+
+.login-bg-light {
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1) 55%, transparent), var(--bg-img);
+  opacity: 0;
+}
+
+[data-theme="light"] .login-bg-dark { opacity: 0; }
+[data-theme="light"] .login-bg-light { opacity: 1; }
+
+/* ===== Changement de thème : les couleurs glissent au lieu de sauter (classe posée par useThemeFade) ===== */
+.login-page.is-theme-fading,
+.login-page.is-theme-fading *,
+.login-page.is-theme-fading *::before,
+.login-page.is-theme-fading *::after {
+  transition:
+    color 0.8s ease,
+    background-color 0.8s ease,
+    border-color 0.8s ease,
+    box-shadow 0.8s ease,
+    fill 0.8s ease,
+    stroke 0.8s ease,
+    opacity 0.9s ease !important;
+}
+
+/* ===== Carte : verre dépoli, coins biseautés, cadre de 1 px ===== */
+.login-card-wrap {
+  box-shadow: 0 34px 70px -34px var(--login-shadow);
+}
+
+.login-card {
+  --c: 18px;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Cadre : anneau de 1 px (contour biseauté relié à un contour intérieur inversé par un « pont » de largeur nulle). */
+.login-card::before,
+.chamfer-ring {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--login-card-line);
+  pointer-events: none;
+  clip-path: polygon(
+    var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)),
+    calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c), var(--c) 0,
+    calc(var(--c) + 0.42px) 1px, 1px calc(var(--c) + 0.42px), 1px calc(100% - var(--c) - 0.42px),
+    calc(var(--c) + 0.42px) calc(100% - 1px), calc(100% - var(--c) - 0.42px) calc(100% - 1px),
+    calc(100% - 1px) calc(100% - var(--c) - 0.42px), calc(100% - 1px) calc(var(--c) + 0.42px),
+    calc(100% - var(--c) - 0.42px) 1px, calc(var(--c) + 0.42px) 1px
+  );
+}
+
+/* Second cadre décoratif, plus discret, à l'intérieur de la carte. */
+.chamfer-ring {
+  --c: 10px;
+  background: var(--login-ring);
+}
+
+/* Fond translucide + flou, sous le cadre et le contenu. */
+.login-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--login-card);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+  clip-path: polygon(
+    calc(var(--c) + 0.42px) 1px, calc(100% - var(--c) - 0.42px) 1px, calc(100% - 1px) calc(var(--c) + 0.42px),
+    calc(100% - 1px) calc(100% - var(--c) - 0.42px), calc(100% - var(--c) - 0.42px) calc(100% - 1px),
+    calc(var(--c) + 0.42px) calc(100% - 1px), 1px calc(100% - var(--c) - 0.42px), 1px calc(var(--c) + 0.42px)
+  );
+}
+
+/* ===== Champs ===== */
+.login-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--login-field-line);
+  background: var(--login-field);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.login-field:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.login-field:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.login-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: .875rem;
+  box-shadow: none;
+}
+
+.login-input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.login-input:focus,
+.login-input:focus-visible {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+}
+
+.login-features {
+  --login-feature-text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95), 0 0 12px rgba(255, 255, 255, 0.8);
+}
+
+.login-feature-title,
+.login-feature-description {
+  color: var(--text);
+  text-shadow: var(--login-feature-text-shadow);
+}
+
+.login-feature-item > svg {
+  filter: drop-shadow(0 1px 3px rgba(255, 255, 255, 0.85));
+}
+
+[data-theme="dark"] .login-features {
+  --login-feature-text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95), 0 0 12px rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="dark"] .login-feature-item > svg {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
+}
+
+/* ===== Accessibilité : pas de transition si l'utilisateur réduit les animations ===== */
+@media (prefers-reduced-motion: reduce) {
+  .login-bg-layer { transition: none; }
+
+  .login-page.is-theme-fading,
+  .login-page.is-theme-fading *,
+  .login-page.is-theme-fading *::before,
+  .login-page.is-theme-fading *::after {
+    transition: none !important;
+  }
+}
+
 
 
 /* Aperçu : la colonne latérale passe à droite quand le panneau est assez large (requête de conteneur). */

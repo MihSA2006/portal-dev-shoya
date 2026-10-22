@@ -183,12 +183,13 @@ export default function Navbar({ onMenuClick }) {
                 ))}
               </ul>
               <div className="border-t border-[var(--border)] py-1">
-                <button
-                  onClick={() => { close(); /* TODO: implement sign-out. */ }}
+                <Link
+                  to="/login"
+                  onClick={close}
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-soft)] hover:bg-[var(--surface-2)] hover:text-[var(--accent)] transition-colors"
                 >
                   <LogOut size={17} strokeWidth={1.75} /> Se déconnecter
-                </button>
+                </Link>
               </div>
             </div>
           )}
